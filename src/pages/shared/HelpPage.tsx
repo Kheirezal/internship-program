@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { HelpCircle, Mail, MessageSquare, BookOpen, Phone, FileText } from "lucide-react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const faqs = [
   { q: "How do I submit a logbook?", a: "Navigate to Logbooks → Submit Logbook. Fill in the daily entry form and click submit." },
@@ -27,6 +28,7 @@ const guides = [
 ];
 
 export default function HelpPage() {
+  const navigate = useNavigate();
   return (
     <div className="space-y-6 animate-in max-w-3xl mx-auto">
       <div className="text-center">
@@ -60,7 +62,15 @@ export default function HelpPage() {
         <TabsContent value="guides">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {guides.map((g, i) => (
-              <Card key={i} className="shadow-card hover:shadow-elevated transition-shadow cursor-pointer">
+              <Card 
+                key={i} 
+                className="shadow-card hover:shadow-elevated transition-shadow cursor-pointer"
+                onClick={() => {
+                  if (g.title === "Getting Started Guide") navigate("/faq");
+                  else if (g.title === "Evaluation Process") navigate("/faq");
+                  else toast.info(`Viewing ${g.title}...`);
+                }}
+              >
                 <CardContent className="p-4 flex items-start gap-3">
                   <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                     <g.icon className="h-5 w-5 text-primary" />
@@ -82,7 +92,7 @@ export default function HelpPage() {
               <CardContent className="space-y-4">
                 <div className="space-y-2"><Label>Subject</Label><Input placeholder="Brief description of your issue" /></div>
                 <div className="space-y-2"><Label>Message</Label><Textarea placeholder="Describe your issue in detail..." rows={4} /></div>
-                <Button className="gradient-primary" onClick={() => toast.success("Support ticket submitted!")}>Submit</Button>
+                <Button className="gradient-primary w-full" onClick={() => navigate("/contact-support")}>Open Support Portal</Button>
               </CardContent>
             </Card>
 

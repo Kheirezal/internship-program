@@ -22,9 +22,9 @@ const MOCK_USERS: Record<string, { password: string; user: User }> = {
     password: "password",
     user: { id: "u2", email: "advisor@imem.edu", name: "Prof. James Wilson", role: "internship_advisor", department: "Information Systems", avatar: "" },
   },
-  "evaluator@imem.edu": {
+  "depthead@imem.edu": {
     password: "password",
-    user: { id: "u3", email: "evaluator@imem.edu", name: "Dr. Maria Garcia", role: "internship_evaluator", department: "Software Engineering", avatar: "" },
+    user: { id: "u3", email: "depthead@imem.edu", name: "Dr. Maria Garcia", role: "department_head", department: "Faculty of Engineering", avatar: "" },
   },
   "supervisor@company.com": {
     password: "password",

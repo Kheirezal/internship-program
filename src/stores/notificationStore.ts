@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { Notification } from "@/types";
+import type { Notification, User } from "@/types";
 
 interface NotificationState {
   notifications: Notification[];
@@ -8,6 +8,7 @@ interface NotificationState {
   markAsRead: (id: string) => void;
   markAllAsRead: () => void;
   clearAll: () => void;
+  generateAutoNotifications: (user: User | null) => void;
 }
 
 const MOCK_NOTIFICATIONS: Notification[] = [
@@ -36,5 +37,60 @@ export const useNotificationStore = create<NotificationState>((set) => ({
       notifications: state.notifications.map((n) => ({ ...n, read: true })),
       unreadCount: 0,
     })),
-  clearAll: () => set({ notifications: [], unreadCount: 0 }),
-}));
+   clearAll: () => set({ notifications: [], unreadCount: 0 }),
+   generateAutoNotifications: (user) => {
+     if (!user) return;
+     const newNotifications: Omit<Notification, "id" | "createdAt">[] = [];
+
+     // Coordinator Checks
+     if (user.role === "internship_coordinator") {
+       newNotifications.push({
+         userId: user.id,
+         type: "system_alert",
+         title: "Program Risk Alert",
+         message: "3 students have missing logbooks for this week.",
+         read: false,
+         link: "/internship-coordinator/reports"
+       });
+     }
+
+     // Advisor Checks
+     if (user.role === "internship_advisor") {
+       newNotifications.push({
+         userId: user.id,
+         type: "logbook_submitted",
+         title: "Pending Reviews",
+         message: "You have 4 logbooks waiting for your approval.",
+         read: false,
+         link: "/internship-advisor/logbooks"
+       });
+     }
+
+     // Student Checks
+     if (user.role === "internship_student") {
+       newNotifications.push({
+         userId: user.id,
+         type: "task_assigned",
+         title: "Weekly Task",
+         message: "Don't forget to submit your weekly logbook today.",
+         read: false,
+         link: "/internship-student/logbooks"
+       });
+     }
+
+     if (newNotifications.length > 0) {
+       set((state) => {
+         const added = newNotifications.map((n, i) => ({
+           ...n,
+           id: "auto-" + Date.now() + i,
+           createdAt: new Date().toISOString()
+         }));
+         const filtered = added.filter(an => !state.notifications.some(on => on.message === an.message));
+         return {
+           notifications: [...filtered, ...state.notifications],
+           unreadCount: state.unreadCount + filtered.length
+         };
+       });
+     }
+   }
+ }));

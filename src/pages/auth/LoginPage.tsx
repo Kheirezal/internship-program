@@ -33,7 +33,7 @@ export default function LoginPage() {
   const demoAccounts = [
     { label: "Coordinator", email: "coordinator@imem.edu" },
     { label: "Advisor", email: "advisor@imem.edu" },
-    { label: "Evaluator", email: "evaluator@imem.edu" },
+    { label: "Dept Head", email: "depthead@imem.edu" },
     { label: "Supervisor", email: "supervisor@company.com" },
     { label: "Student", email: "student@imem.edu" },
   ];

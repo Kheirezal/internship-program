@@ -8,11 +8,16 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { Placement } from "@/types";
 import { mockLogbooks, mockAttendance, mockGrades, mockTasks } from "@/data/mockData";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/stores/authStore";
 
 export default function StudentsPage() {
   const [search, setSearch] = useState("");
-  const [viewOpen, setViewOpen] = useState(false);
-  const [selected, setSelected] = useState<Placement | null>(null);
+  const navigate = useNavigate();
+  const { user } = useAuthStore();
+  
+  const rolePath = user?.role.replace(/_/g, "-") || "shared";
+  const subPath = user?.role === "company_supervisor" ? "interns" : "students";
 
   const filtered = mockPlacements.filter(p => p.studentName.toLowerCase().includes(search.toLowerCase()));
 
@@ -24,12 +29,8 @@ export default function StudentsPage() {
     const presentDays = attendance.filter(a => a.status === "present" || a.status === "late").length;
     return {
       logbooks: logbooks.length,
-      approvedLogbooks: logbooks.filter(l => l.status === "approved").length,
       attendanceRate: attendance.length > 0 ? Math.round((presentDays / attendance.length) * 100) : 0,
-      tasks: tasks.length,
-      completedTasks: tasks.filter(t => t.status === "completed").length,
       grade: grade?.letterGrade || "Pending",
-      finalGrade: grade?.finalGrade || 0,
     };
   };
 
@@ -45,81 +46,70 @@ export default function StudentsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filtered.map((p) => {
           const stats = getStudentStats(p.studentId);
+          const detailUrl = `/${rolePath}/${subPath}/${p.id}`;
+          
           return (
-            <Card key={p.id} className="shadow-card hover:shadow-elevated transition-shadow cursor-pointer" onClick={() => { setSelected(p); setViewOpen(true); }}>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="h-10 w-10 rounded-full gradient-primary flex items-center justify-center text-primary-foreground font-bold">
+            <Card 
+              key={p.id} 
+              className="shadow-card hover:shadow-elevated transition-all duration-300 cursor-pointer group border-border/50 hover:border-primary/50" 
+              onClick={() => navigate(detailUrl)}
+            >
+              <CardContent className="p-5">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="h-12 w-12 rounded-2xl gradient-primary flex items-center justify-center text-primary-foreground font-bold text-lg shadow-sm group-hover:scale-110 transition-transform">
                     {p.studentName.charAt(0)}
                   </div>
                   <div>
-                    <p className="font-medium">{p.studentName}</p>
-                    <p className="text-xs text-muted-foreground">{p.companyName}</p>
+                    <p className="font-bold text-lg group-hover:text-primary transition-colors">{p.studentName}</p>
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Building2 className="h-3 w-3" /> {p.companyName}
+                    </p>
                   </div>
                 </div>
-                <div className="space-y-2">
+                
+                <div className="space-y-3">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">Progress</span>
-                    <span className="font-medium">{p.progress}%</span>
+                    <span className="text-muted-foreground font-medium">Internship Progress</span>
+                    <span className="font-bold text-primary">{p.progress}%</span>
                   </div>
-                  <div className="h-2 rounded-full bg-muted overflow-hidden"><div className="h-full rounded-full bg-primary" style={{ width: `${p.progress}%` }} /></div>
-                  <div className="grid grid-cols-3 gap-2 mt-2 text-xs text-center">
-                    <div className="p-1.5 rounded bg-muted/50"><p className="font-medium">{stats.logbooks}</p><p className="text-muted-foreground">Logbooks</p></div>
-                    <div className="p-1.5 rounded bg-muted/50"><p className="font-medium">{stats.attendanceRate}%</p><p className="text-muted-foreground">Attendance</p></div>
-                    <div className="p-1.5 rounded bg-muted/50"><p className="font-medium">{stats.grade}</p><p className="text-muted-foreground">Grade</p></div>
+                  <div className="h-2 rounded-full bg-muted overflow-hidden">
+                    <div 
+                      className="h-full rounded-full bg-primary transition-all duration-1000" 
+                      style={{ width: `${p.progress}%` }} 
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-3 gap-2 mt-4">
+                    <div className="p-2 rounded-xl bg-muted/30 border border-border/30 text-center">
+                      <p className="font-bold text-sm tracking-tight">{stats.logbooks}</p>
+                      <p className="text-[10px] text-muted-foreground uppercase font-semibold">Logbooks</p>
+                    </div>
+                    <div className="p-2 rounded-xl bg-muted/30 border border-border/30 text-center">
+                      <p className="font-bold text-sm tracking-tight">{stats.attendanceRate}%</p>
+                      <p className="text-[10px] text-muted-foreground uppercase font-semibold">Attend.</p>
+                    </div>
+                    <div className="p-2 rounded-xl bg-muted/30 border border-border/30 text-center">
+                      <p className="font-bold text-sm tracking-tight">{stats.grade}</p>
+                      <p className="text-[10px] text-muted-foreground uppercase font-semibold">Grade</p>
+                    </div>
                   </div>
                 </div>
-                <div className="mt-3 flex items-center justify-between">
+                
+                <div className="mt-5 pt-4 border-t border-border/50 flex items-center justify-between">
                   <StatusBadge status={p.status} />
-                  <Button size="sm" variant="ghost" className="h-7"><Eye className="h-3.5 w-3.5 mr-1" /> View</Button>
+                  <Button 
+                    size="sm" 
+                    variant="secondary" 
+                    className="h-8 px-3 text-xs font-semibold gap-1.5 hover:bg-primary hover:text-primary-foreground transition-colors"
+                  >
+                    <Eye className="h-3.5 w-3.5" /> View Profile
+                  </Button>
                 </div>
               </CardContent>
             </Card>
           );
         })}
       </div>
-
-      {/* Student Detail Dialog */}
-      <Dialog open={viewOpen} onOpenChange={setViewOpen}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader><DialogTitle>Student Profile</DialogTitle></DialogHeader>
-          {selected && (() => {
-            const stats = getStudentStats(selected.studentId);
-            return (
-              <div className="space-y-4 text-sm">
-                <div className="flex items-center gap-3">
-                  <div className="h-14 w-14 rounded-full gradient-primary flex items-center justify-center text-primary-foreground text-xl font-bold">
-                    {selected.studentName.charAt(0)}
-                  </div>
-                  <div>
-                    <p className="text-lg font-bold">{selected.studentName}</p>
-                    <p className="text-muted-foreground">{selected.companyName}</p>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="flex items-center gap-2"><Building2 className="h-4 w-4 text-muted-foreground" /><div><p className="text-muted-foreground">Company</p><p className="font-medium">{selected.companyName}</p></div></div>
-                  <div className="flex items-center gap-2"><User className="h-4 w-4 text-muted-foreground" /><div><p className="text-muted-foreground">Advisor</p><p className="font-medium">{selected.advisorName}</p></div></div>
-                  <div className="flex items-center gap-2"><User className="h-4 w-4 text-muted-foreground" /><div><p className="text-muted-foreground">Supervisor</p><p className="font-medium">{selected.supervisorName}</p></div></div>
-                  <div className="flex items-center gap-2"><TrendingUp className="h-4 w-4 text-muted-foreground" /><div><p className="text-muted-foreground">Grade</p><p className="font-bold">{stats.grade} ({stats.finalGrade})</p></div></div>
-                </div>
-                <div>
-                  <p className="text-muted-foreground mb-1">Period: {selected.startDate} — {selected.endDate}</p>
-                  <div className="flex items-center gap-3">
-                    <div className="h-3 flex-1 rounded-full bg-muted overflow-hidden"><div className="h-full rounded-full bg-primary" style={{ width: `${selected.progress}%` }} /></div>
-                    <span className="font-medium">{selected.progress}%</span>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <div className="p-3 rounded-lg bg-muted/50 text-center"><p className="text-lg font-bold">{stats.logbooks}</p><p className="text-xs text-muted-foreground">Logbooks</p></div>
-                  <div className="p-3 rounded-lg bg-muted/50 text-center"><p className="text-lg font-bold">{stats.attendanceRate}%</p><p className="text-xs text-muted-foreground">Attendance</p></div>
-                  <div className="p-3 rounded-lg bg-muted/50 text-center"><p className="text-lg font-bold">{stats.completedTasks}/{stats.tasks}</p><p className="text-xs text-muted-foreground">Tasks Done</p></div>
-                  <div className="p-3 rounded-lg bg-muted/50 text-center"><p className="text-lg font-bold">{stats.approvedLogbooks}</p><p className="text-xs text-muted-foreground">Approved</p></div>
-                </div>
-              </div>
-            );
-          })()}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

@@ -61,7 +61,7 @@ export default function RegisterPage() {
                     <SelectItem value="internship_student">Student</SelectItem>
                     <SelectItem value="internship_coordinator">Coordinator</SelectItem>
                     <SelectItem value="internship_advisor">Academic Advisor</SelectItem>
-                    <SelectItem value="internship_evaluator">Evaluator</SelectItem>
+                    <SelectItem value="department_head">Department Head</SelectItem>
                     <SelectItem value="company_supervisor">Company Supervisor</SelectItem>
                   </SelectContent>
                 </Select>

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useAuthStore } from "@/stores/authStore";
 import { useUIStore } from "@/stores/uiStore";
 import type { UserRole } from "@/types";
@@ -5,7 +6,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import {
   Building2, Users, ClipboardList, BookOpen, CheckSquare, Calendar,
   MessageSquare, BarChart3, FileText, Star, GraduationCap, AlertCircle,
-  Home, UserCheck, Clock, Upload, HelpCircle, Briefcase, Target
+  Home, UserCheck, Clock, Upload, HelpCircle, Briefcase, Target, ChevronRight, Shield
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -14,6 +15,7 @@ interface NavItem {
   label: string;
   path: string;
   icon: React.ElementType;
+  children?: { label: string; path: string; icon: React.ElementType }[];
 }
 
 const NAV_ITEMS: Record<UserRole, NavItem[]> = {
@@ -27,25 +29,56 @@ const NAV_ITEMS: Record<UserRole, NavItem[]> = {
     { label: "Reports", path: "/internship-coordinator/reports", icon: BarChart3 },
     { label: "Complaints", path: "/internship-coordinator/complaints", icon: AlertCircle },
     { label: "Messages", path: "/internship-coordinator/messages", icon: MessageSquare },
+    { label: "User Management", path: "/internship-coordinator/users", icon: Users },
   ],
   internship_advisor: [
-    { label: "Dashboard", path: "/internship-advisor", icon: Home },
-    { label: "Students", path: "/internship-advisor/students", icon: Users },
-    { label: "Logbooks", path: "/internship-advisor/logbooks", icon: BookOpen },
-    { label: "Placements", path: "/internship-advisor/placements", icon: Briefcase },
-    { label: "Evaluations", path: "/internship-advisor/evaluations", icon: Star },
-    { label: "Calendar", path: "/internship-advisor/calendar", icon: Calendar },
-    { label: "Reports", path: "/internship-advisor/reports", icon: FileText },
-    { label: "Messages", path: "/internship-advisor/messages", icon: MessageSquare },
+    { 
+      label: "Advisor", 
+      path: "#", 
+      icon: UserCheck,
+      children: [
+        { label: "Dashboard", path: "/internship-advisor", icon: Home },
+        { label: "Present", path: "/internship-advisor/attendance", icon: Clock },
+        { label: "Students", path: "/internship-advisor/students", icon: Users },
+        { label: "Logbooks", path: "/internship-advisor/logbooks", icon: BookOpen },
+        { label: "Placements", path: "/internship-advisor/placements", icon: Briefcase },
+        { label: "Evaluations", path: "/internship-advisor/evaluations", icon: Star },
+        { label: "Calendar", path: "/internship-advisor/calendar", icon: Calendar },
+        { label: "Reports", path: "/internship-advisor/reports", icon: FileText },
+        { label: "Messages", path: "/internship-advisor/messages", icon: MessageSquare },
+      ]
+    },
+    { 
+      label: "Evaluator", 
+      path: "#", 
+      icon: Star,
+      children: [
+        { label: "Dashboard", path: "/internship-evaluator", icon: Home },
+        { label: "Evaluations", path: "/internship-evaluator/evaluations", icon: Star },
+        { label: "Defense", path: "/internship-evaluator/defense", icon: Target },
+        { label: "Students", path: "/internship-evaluator/students", icon: Users },
+        { label: "Calendar", path: "/internship-evaluator/calendar", icon: Calendar },
+        { label: "Grades", path: "/internship-evaluator/grades", icon: BarChart3 },
+        { label: "Messages", path: "/internship-evaluator/messages", icon: MessageSquare },
+      ]
+    },
   ],
-  internship_evaluator: [
-    { label: "Dashboard", path: "/internship-evaluator", icon: Home },
-    { label: "Evaluations", path: "/internship-evaluator/evaluations", icon: Star },
-    { label: "Defense", path: "/internship-evaluator/defense", icon: Target },
-    { label: "Students", path: "/internship-evaluator/students", icon: Users },
-    { label: "Calendar", path: "/internship-evaluator/calendar", icon: Calendar },
-    { label: "Grades", path: "/internship-evaluator/grades", icon: BarChart3 },
-    { label: "Messages", path: "/internship-evaluator/messages", icon: MessageSquare },
+  department_head: [
+    { 
+      label: "Department Head", 
+      path: "#", 
+      icon: Shield,
+      children: [
+        { label: "Dashboard", path: "/department-head", icon: Home },
+        { label: "Student Management", path: "/department-head/students", icon: GraduationCap },
+        { label: "User Management", path: "/department-head/users", icon: Users },
+        { label: "Partner Companies", path: "/department-head/companies", icon: Building2 },
+        { label: "Oversight Reports", path: "/department-head/reports", icon: BarChart3 },
+        { label: "Evaluations", path: "/department-head/evaluations", icon: Star },
+        { label: "Defenses", path: "/department-head/defense", icon: Target },
+        { label: "Messages", path: "/department-head/messages", icon: MessageSquare },
+      ]
+    },
   ],
   company_supervisor: [
     { label: "Dashboard", path: "/company-supervisor", icon: Home },
@@ -72,6 +105,11 @@ export default function AppSidebar() {
   const { user } = useAuthStore();
   const { sidebarOpen, toggleSidebar } = useUIStore();
   const location = useLocation();
+  const [openSubmenu, setOpenSubmenu] = useState<string | null>(() => {
+    if (location.pathname.startsWith("/internship-advisor")) return "Advisor";
+    if (location.pathname.startsWith("/department-head")) return "Department Head";
+    return null;
+  });
 
   if (!user) return null;
 
@@ -107,13 +145,71 @@ export default function AppSidebar() {
         {/* Nav */}
         <nav className="flex-1 overflow-y-auto p-3 space-y-1">
           {items.map((item) => {
-            const isActive = location.pathname === item.path;
+            const hasChildren = item.children && item.children.length > 0;
+            const isSubmenuOpen = openSubmenu === item.label;
+            const isActive = location.pathname === item.path || (hasChildren && item.children?.some(c => location.pathname === c.path));
+
+            if (hasChildren) {
+              return (
+                <div key={item.label} className="space-y-1">
+                  <button
+                    onClick={() => setOpenSubmenu(isSubmenuOpen ? null : item.label)}
+                    className={cn(
+                      "flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                      isActive 
+                        ? "text-primary bg-primary/5" 
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <item.icon className="h-4 w-4 flex-shrink-0" />
+                      {item.label}
+                    </div>
+                    <motion.div
+                      animate={{ rotate: isSubmenuOpen ? 90 : 0 }}
+                      className="text-muted-foreground/50"
+                    >
+                      <ChevronRight className="h-3 w-3" />
+                    </motion.div>
+                  </button>
+                  
+                  <AnimatePresence>
+                    {isSubmenuOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden pl-4 space-y-1"
+                      >
+                        {item.children?.map((child) => (
+                          <NavLink
+                            key={child.path}
+                            to={child.path}
+                            onClick={() => window.innerWidth < 1024 && toggleSidebar()}
+                            className={({ isActive }) => cn(
+                              "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                              isActive
+                                ? "text-primary font-bold"
+                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                            )}
+                          >
+                            <child.icon className="h-4 w-4" />
+                            {child.label}
+                          </NavLink>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            }
+
             return (
               <NavLink
                 key={item.path}
                 to={item.path}
                 onClick={() => window.innerWidth < 1024 && toggleSidebar()}
-                className={cn(
+                className={({ isActive }) => cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
                   isActive
                     ? "gradient-primary text-primary-foreground shadow-sm shadow-primary/20"
@@ -141,3 +237,4 @@ export default function AppSidebar() {
     </>
   );
 }
+

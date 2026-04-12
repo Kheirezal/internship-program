@@ -57,6 +57,18 @@ export default function ReportsPage() {
     attendance_summary: "Attendance Summary",
     evaluation_summary: "Evaluation Summary",
     student_progress: "Student Progress",
+    task_progress: "Task Performance",
+    risk_alert: "Risk & Alerts",
+    grade_calculation: "Grade Analysis",
+    weekly_summary: "Weekly Summary",
+    completion_report: "Program Completion",
+    logbook_activity: "Logbook Activity",
+    attendance_detailed: "Attendance Detail",
+    report_lifecycle: "Report Lifecycle",
+    defense_schedule: "Defense Schedule",
+    complaint_summary: "Complaint Summary",
+    comm_activity: "Communication Audit",
+    doc_submission: "Document Status",
   };
 
   return (
