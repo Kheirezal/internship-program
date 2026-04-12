@@ -2,7 +2,9 @@ import StatsCard from "@/components/shared/StatsCard";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Briefcase, BookOpen, Clock, BarChart3, CheckCircle2, Eye } from "lucide-react";
+import { analyticsService } from "@/services/analyticsService";
+import { useAuthStore } from "@/stores/authStore";
+import { Briefcase, BookOpen, Clock, BarChart3, CheckCircle2, Eye, Star, Info, AlertCircle, ShieldAlert } from "lucide-react";
 import { mockLogbooks, mockTasks, mockAttendance } from "@/data/mockData";
 import { useNavigate } from "react-router-dom";
 
@@ -17,14 +19,44 @@ const PROGRESS_STEPS = [
   { step: 8, label: "Grade published", done: false },
 ];
 
-export default function StudentDashboard() {
-  const navigate = useNavigate();
+ export default function StudentDashboard() {
+   const navigate = useNavigate();
+   const { user } = useAuthStore();
+   const insights = analyticsService.getStudentInsights(user?.id || "u1");
+
+   const getInsightIcon = (type: string) => {
+     switch (type) {
+       case "danger": return <ShieldAlert className="h-4 w-4 text-destructive" />;
+       case "warning": return <AlertCircle className="h-4 w-4 text-warning" />;
+       case "success": return <CheckCircle2 className="h-4 w-4 text-success" />;
+       default: return <Info className="h-4 w-4 text-primary" />;
+     }
+   };
 
   return (
     <div className="space-y-6 animate-in">
       <div>
         <h1 className="text-2xl font-bold">Student Dashboard</h1>
-        <p className="text-muted-foreground text-sm">Track your internship progress</p>
+        <p className="text-muted-foreground text-sm">Welcome back, {user?.name}!</p>
+      </div>
+
+      {/* Auto Insights Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {insights.map((insight, idx) => (
+          <div 
+            key={idx} 
+            className={`flex items-center gap-3 p-3 rounded-lg border bg-card shadow-sm animate-in fade-in slide-in-from-top-2 duration-500`}
+            style={{ animationDelay: `${idx * 100}ms` }}
+          >
+            <div className="flex-shrink-0">{getInsightIcon(insight.type)}</div>
+            <p className="text-sm font-medium flex-1">{insight.message}</p>
+            {insight.link && (
+               <Button variant="ghost" size="sm" className="h-7 text-xs px-2" onClick={() => navigate(insight.link!)}>
+                 Action
+               </Button>
+            )}
+          </div>
+        ))}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

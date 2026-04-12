@@ -20,13 +20,13 @@ export default function CompaniesPage() {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [selected, setSelected] = useState<Company | null>(null);
-  const [form, setForm] = useState({ name: "", industry: "", address: "", contactPerson: "", contactEmail: "", contactPhone: "", status: "pending" as Company["status"] });
+  const [form, setForm] = useState({ name: "", industry: "", address: "", contactPerson: "", contactEmail: "", contactPhone: "", status: "pending" as Company["status"], maxCapacity: 5, positions: "", requiredSkills: "", duration: "" });
 
   const filtered = mockCompanies
     .filter(c => c.name.toLowerCase().includes(search.toLowerCase()) || c.industry.toLowerCase().includes(search.toLowerCase()))
     .filter(c => statusFilter === "all" || c.status === statusFilter);
 
-  const resetForm = () => setForm({ name: "", industry: "", address: "", contactPerson: "", contactEmail: "", contactPhone: "", status: "pending" });
+  const resetForm = () => setForm({ name: "", industry: "", address: "", contactPerson: "", contactEmail: "", contactPhone: "", status: "pending", maxCapacity: 5, positions: "", requiredSkills: "", duration: "" });
 
   const handleCreate = () => {
     toast.success(`Company "${form.name}" created successfully!`);
@@ -57,16 +57,37 @@ export default function CompaniesPage() {
         <div className="space-y-2"><Label>Email</Label><Input type="email" value={values.contactEmail} onChange={e => onChange({ ...values, contactEmail: e.target.value })} /></div>
         <div className="space-y-2"><Label>Phone</Label><Input value={values.contactPhone} onChange={e => onChange({ ...values, contactPhone: e.target.value })} /></div>
       </div>
-      <div className="space-y-2">
-        <Label>Status</Label>
-        <Select value={values.status} onValueChange={v => onChange({ ...values, status: v as Company["status"] })}>
-          <SelectTrigger><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="inactive">Inactive</SelectItem>
-            <SelectItem value="pending">Pending</SelectItem>
-          </SelectContent>
-        </Select>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label>Status</Label>
+          <Select value={values.status} onValueChange={v => onChange({ ...values, status: v as Company["status"] })}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="inactive">Inactive</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-2">
+          <Label>Student Intake Capacity</Label>
+          <Input type="number" min={1} value={values.maxCapacity} onChange={e => onChange({ ...values, maxCapacity: parseInt(e.target.value) || 0 })} />
+          <p className="text-[10px] text-muted-foreground">Maximum number of interns this company can host.</p>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="space-y-2">
+           <Label>Available Positions</Label>
+           <Input value={values.positions} onChange={e => onChange({ ...values, positions: e.target.value })} placeholder="e.g. Developer, QA..." />
+        </div>
+        <div className="space-y-2">
+           <Label>Required Skills</Label>
+           <Input value={values.requiredSkills} onChange={e => onChange({ ...values, requiredSkills: e.target.value })} placeholder="e.g. React, Python..." />
+        </div>
+        <div className="space-y-2">
+           <Label>Duration</Label>
+           <Input value={values.duration} onChange={e => onChange({ ...values, duration: e.target.value })} placeholder="e.g. 4 Months" />
+        </div>
       </div>
     </div>
   );
@@ -108,30 +129,52 @@ export default function CompaniesPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead><tr className="border-b text-left text-muted-foreground">
-                <th className="p-4 font-medium">Company</th><th className="p-4 font-medium">Industry</th><th className="p-4 font-medium">Contact</th><th className="p-4 font-medium">Students</th><th className="p-4 font-medium">Status</th><th className="p-4 font-medium">Actions</th>
+                <th className="p-4 font-medium">Company</th><th className="p-4 font-medium">Industry</th><th className="p-4 font-medium">Contact</th><th className="p-4 font-medium">Capacity</th><th className="p-4 font-medium">Status</th><th className="p-4 font-medium text-right">Actions</th>
               </tr></thead>
               <tbody>
-                {filtered.map((c) => (
-                  <tr key={c.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
-                    <td className="p-4">
-                      <div className="flex items-center gap-2">
-                        <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center"><Building2 className="h-4 w-4 text-primary" /></div>
-                        <span className="font-medium">{c.name}</span>
-                      </div>
-                    </td>
-                    <td className="p-4">{c.industry}</td>
-                    <td className="p-4"><span className="text-xs">{c.contactPerson}<br/>{c.contactEmail}</span></td>
-                    <td className="p-4 font-mono">{c.studentsCount}</td>
-                    <td className="p-4"><StatusBadge status={c.status} /></td>
-                    <td className="p-4">
-                      <div className="flex gap-1">
-                        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => { setSelected(c); setViewOpen(true); }}><Eye className="h-4 w-4" /></Button>
-                        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => { setSelected(c); setForm({ name: c.name, industry: c.industry, address: c.address, contactPerson: c.contactPerson, contactEmail: c.contactEmail, contactPhone: c.contactPhone, status: c.status }); setEditOpen(true); }}><Edit className="h-4 w-4" /></Button>
-                        <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive" onClick={() => { setSelected(c); setDeleteOpen(true); }}><Trash2 className="h-4 w-4" /></Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {filtered.map((c) => {
+                  const occupancyRate = (c.studentsCount / c.maxCapacity) * 100;
+                  return (
+                    <tr key={c.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
+                      <td className="p-4">
+                        <div className="flex items-center gap-3">
+                          <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/5 transition-transform hover:scale-105"><Building2 className="h-4.5 w-4.5 text-primary" /></div>
+                          <div>
+                             <p className="font-bold text-sm tracking-tight">{c.name}</p>
+                             <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">{c.industry}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-4 text-xs font-medium text-muted-foreground">{c.industry}</td>
+                      <td className="p-4 text-xs">
+                         <p className="font-bold text-foreground/80">{c.contactPerson}</p>
+                         <p className="text-muted-foreground lowercase">{c.contactEmail}</p>
+                      </td>
+                      <td className="p-4">
+                         <div className="space-y-1.5 w-32">
+                            <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-tight">
+                               <span className="text-primary">{c.studentsCount} <span className="text-muted-foreground">/ {c.maxCapacity}</span></span>
+                               <span className={occupancyRate >= 90 ? "text-destructive" : "text-muted-foreground"}>{Math.round(occupancyRate)}%</span>
+                            </div>
+                            <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                               <div 
+                                 className={`h-full transition-all duration-500 rounded-full ${occupancyRate >= 90 ? "bg-destructive" : occupancyRate >= 70 ? "bg-amber-500" : "bg-primary"}`} 
+                                 style={{ width: `${Math.min(occupancyRate, 100)}%` }} 
+                               />
+                            </div>
+                         </div>
+                      </td>
+                      <td className="p-4"><StatusBadge status={c.status} /></td>
+                      <td className="p-4 text-right">
+                        <div className="flex gap-1 justify-end">
+                          <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full hover:bg-primary/10 hover:text-primary transition-all" onClick={() => { setSelected(c); setViewOpen(true); }}><Eye className="h-4 w-4" /></Button>
+                          <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full hover:bg-primary/10 hover:text-primary transition-all" onClick={() => { setSelected(c); setForm({ name: c.name, industry: c.industry, address: c.address, contactPerson: c.contactPerson, contactEmail: c.contactEmail, contactPhone: c.contactPhone, status: c.status, maxCapacity: c.maxCapacity, positions: c.positions?.join(", ") || "", requiredSkills: c.requiredSkills?.join(", ") || "", duration: c.duration || "" }); setEditOpen(true); }}><Edit className="h-4 w-4" /></Button>
+                          <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full hover:bg-destructive/10 hover:text-destructive transition-all" onClick={() => { setSelected(c); setDeleteOpen(true); }}><Trash2 className="h-4 w-4" /></Button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -140,23 +183,73 @@ export default function CompaniesPage() {
 
       {/* View Dialog */}
       <Dialog open={viewOpen} onOpenChange={setViewOpen}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>{selected?.name}</DialogTitle></DialogHeader>
+        <DialogContent className="max-w-md">
+          <DialogHeader><p className="text-[10px] uppercase font-bold text-primary tracking-[0.2em] mb-1">Partner Overview</p><DialogTitle className="text-2xl font-bold tracking-tight">{selected?.name}</DialogTitle></DialogHeader>
           {selected && (
-            <div className="space-y-3 text-sm">
-              <div className="grid grid-cols-2 gap-3">
-                <div><p className="text-muted-foreground">Industry</p><p className="font-medium">{selected.industry}</p></div>
-                <div><p className="text-muted-foreground">Status</p><StatusBadge status={selected.status} /></div>
-                <div><p className="text-muted-foreground">Contact Person</p><p className="font-medium">{selected.contactPerson}</p></div>
-                <div><p className="text-muted-foreground">Email</p><p className="font-medium">{selected.contactEmail}</p></div>
-                <div><p className="text-muted-foreground">Phone</p><p className="font-medium">{selected.contactPhone}</p></div>
-                <div><p className="text-muted-foreground">Students</p><p className="font-medium">{selected.studentsCount}</p></div>
+            <div className="space-y-6 text-sm">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-3 rounded-xl bg-muted/30 border"><p className="text-[10px] uppercase font-bold text-muted-foreground mb-1">Industry Focus</p><p className="font-bold text-primary">{selected.industry}</p></div>
+                <div className="p-3 rounded-xl bg-muted/30 border"><p className="text-[10px] uppercase font-bold text-muted-foreground mb-1">Partnership Status</p><StatusBadge status={selected.status} /></div>
               </div>
-              <div><p className="text-muted-foreground">Address</p><p className="font-medium">{selected.address}</p></div>
+
+              <div className="space-y-3">
+                 <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Host Capacity Information</p>
+                 <div className="p-5 rounded-2xl bg-primary/5 border border-primary/10 space-y-4">
+                    <div className="flex justify-between items-end">
+                       <div>
+                          <p className="text-3xl font-bold text-primary">{selected.studentsCount}</p>
+                          <p className="text-xs text-muted-foreground font-medium">Currently Hosted Interns</p>
+                       </div>
+                       <div className="text-right">
+                          <p className="text-xl font-bold">{selected.maxCapacity}</p>
+                          <p className="text-xs text-muted-foreground font-medium">Total Capacity</p>
+                       </div>
+                    </div>
+                    <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                       <div className="h-full bg-primary" style={{ width: `${(selected.studentsCount / selected.maxCapacity) * 100}%` }} />
+                    </div>
+                    <p className="text-[10px] text-muted-foreground italic font-medium">Available Slots: {selected.maxCapacity - selected.studentsCount} remaining</p>
+                 </div>
+              </div>
+
+              <div className="space-y-3">
+                 <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Internship Opportunities</p>
+                 <div className="grid grid-cols-2 gap-2">
+                    <div className="p-3 rounded-xl bg-muted/30 border">
+                      <p className="text-[10px] uppercase font-bold text-muted-foreground mb-1">Target Roles</p>
+                      <div className="flex flex-wrap gap-1">{(selected.positions && selected.positions.length > 0) ? selected.positions.map(p => <span key={p} className="px-2 py-1 bg-primary/10 text-primary text-[10px] rounded-md font-bold">{p}</span>) : <span className="text-xs text-muted-foreground">N/A</span>}</div>
+                    </div>
+                    <div className="p-3 rounded-xl bg-muted/30 border">
+                      <p className="text-[10px] uppercase font-bold text-muted-foreground mb-1">Required Skills</p>
+                      <div className="flex flex-wrap gap-1">{(selected.requiredSkills && selected.requiredSkills.length > 0) ? selected.requiredSkills.map(s => <span key={s} className="px-2 py-1 border border-primary/20 text-foreground text-[10px] rounded-md">{s}</span>) : <span className="text-xs text-muted-foreground">N/A</span>}</div>
+                    </div>
+                 </div>
+                 <p className="text-xs font-bold text-muted-foreground pl-1">Duration: <span className="text-foreground">{selected.duration || "TBD"}</span></p>
+              </div>
+
+              <div className="space-y-3">
+                 <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Corporate Contact Details</p>
+                 <div className="grid grid-cols-1 gap-2">
+                    <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-muted/50 transition-colors">
+                       <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center text-muted-foreground"><Plus className="h-4 w-4" /></div>
+                       <div><p className="text-[10px] font-bold text-muted-foreground uppercase">Point of Contact</p><p className="font-bold">{selected.contactPerson}</p></div>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-muted/50 transition-colors">
+                       <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center text-muted-foreground"><Plus className="h-4 w-4" /></div>
+                       <div><p className="text-[10px] font-bold text-muted-foreground uppercase">Direct Email</p><p className="font-bold underline decoration-primary/30 underline-offset-4">{selected.contactEmail}</p></div>
+                    </div>
+                 </div>
+              </div>
+              
+              <div className="pt-4 border-t space-y-2">
+                 <p className="text-[10px] font-bold uppercase text-muted-foreground">Office Headquaters</p>
+                 <p className="font-medium text-foreground/80 leading-relaxed">{selected.address}</p>
+              </div>
             </div>
           )}
         </DialogContent>
       </Dialog>
+
 
       {/* Edit Dialog */}
       <Dialog open={editOpen} onOpenChange={setEditOpen}>

@@ -1,7 +1,7 @@
 export type UserRole =
   | "internship_coordinator"
   | "internship_advisor"
-  | "internship_evaluator"
+  | "department_head"
   | "company_supervisor"
   | "internship_student";
 
@@ -15,6 +15,9 @@ export interface User {
   phone?: string;
   theme?: "light" | "dark";
   colorTheme?: string;
+  gpa?: number;
+  completedCourses?: number;
+  skills?: string[];
 }
 
 export interface Company {
@@ -27,6 +30,10 @@ export interface Company {
   contactPhone: string;
   status: "active" | "inactive" | "pending";
   studentsCount: number;
+  maxCapacity: number;
+  positions?: string[];
+  requiredSkills?: string[];
+  duration?: string;
 }
 
 export interface Placement {
@@ -41,8 +48,10 @@ export interface Placement {
   supervisorName: string;
   startDate: string;
   endDate: string;
-  status: "pending" | "active" | "completed" | "cancelled";
+  status: "pending" | "pending_student_confirmation" | "active" | "completed" | "cancelled" | "rejected";
   progress: number;
+  projectTitle?: string;
+  projectStatus?: "pending_approval" | "approved" | "revision_requested";
 }
 
 export interface Logbook {
@@ -188,7 +197,10 @@ export type Permission =
   | "assign_tasks"
   | "manage_calendar"
   | "send_messages"
-  | "view_analytics";
+  | "view_analytics"
+  | "import_students"
+  | "manage_users"
+  | "approve_eligibility";
 
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   internship_coordinator: [
@@ -200,9 +212,9 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "review_logbooks", "evaluate_internship", "send_messages",
     "view_analytics", "manage_calendar", "view_grades",
   ],
-  internship_evaluator: [
-    "evaluate_internship", "manage_evaluations", "send_messages",
-    "manage_calendar", "view_grades",
+  department_head: [
+    "import_students", "manage_users", "approve_eligibility",
+    "view_analytics", "send_messages", "view_grades",
   ],
   company_supervisor: [
     "record_attendance", "assign_tasks", "evaluate_internship",
@@ -217,7 +229,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
 export const ROLE_LABELS: Record<UserRole, string> = {
   internship_coordinator: "Coordinator",
   internship_advisor: "Academic Advisor",
-  internship_evaluator: "Evaluator",
+  department_head: "Department Head",
   company_supervisor: "Company Supervisor",
   internship_student: "Student",
 };

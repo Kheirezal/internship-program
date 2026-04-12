@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { toast } from "sonner";
 import type { Evaluation } from "@/types";
 import { Slider } from "@/components/ui/slider";
+import { useAuthStore } from "@/stores/authStore";
 
 export default function EvaluationsPage() {
   const [createOpen, setCreateOpen] = useState(false);
@@ -19,50 +20,55 @@ export default function EvaluationsPage() {
   const [selected, setSelected] = useState<Evaluation | null>(null);
   const [statusFilter, setStatusFilter] = useState("all");
 
+  const { user } = useAuthStore();
+  const canEvaluate = user?.role === "internship_advisor" || user?.role === "company_supervisor";
+
   const filtered = mockEvaluations.filter(e => statusFilter === "all" || e.status === statusFilter);
 
   return (
     <div className="space-y-6 animate-in">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div><h1 className="text-2xl font-bold">Evaluations</h1><p className="text-muted-foreground text-sm">Manage internship evaluations</p></div>
-        <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-          <DialogTrigger asChild><Button className="gradient-primary gap-2"><Plus className="h-4 w-4" /> New Evaluation</Button></DialogTrigger>
-          <DialogContent className="max-w-lg">
-            <DialogHeader><DialogTitle>Create Evaluation</DialogTitle></DialogHeader>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Student / Placement</Label>
-                <Select><SelectTrigger><SelectValue placeholder="Select placement" /></SelectTrigger>
-                  <SelectContent>{mockPlacements.filter(p => p.status === "active").map(p => <SelectItem key={p.id} value={p.id}>{p.studentName} — {p.companyName}</SelectItem>)}</SelectContent>
-                </Select>
+        {canEvaluate && (
+          <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+            <DialogTrigger asChild><Button className="gradient-primary gap-2"><Plus className="h-4 w-4" /> New Evaluation</Button></DialogTrigger>
+            <DialogContent className="max-w-lg">
+              <DialogHeader><DialogTitle>Create Evaluation</DialogTitle></DialogHeader>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Student / Placement</Label>
+                  <Select><SelectTrigger><SelectValue placeholder="Select placement" /></SelectTrigger>
+                    <SelectContent>{mockPlacements.filter(p => p.status === "active").map(p => <SelectItem key={p.id} value={p.id}>{p.studentName} — {p.companyName}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Role</Label>
+                  <Select><SelectTrigger><SelectValue placeholder="Evaluator role" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="supervisor">Company Supervisor (30%)</SelectItem>
+                      <SelectItem value="advisor">Academic Advisor (30%)</SelectItem>
+                      <SelectItem value="evaluator">Academic Evaluator (40%)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-3">
+                  <Label>Criteria Scores</Label>
+                  {["Technical Skills", "Communication", "Teamwork", "Problem Solving", "Initiative"].map(c => (
+                    <div key={c} className="space-y-1">
+                      <div className="flex justify-between text-sm"><span>{c}</span><span className="text-muted-foreground">0/100</span></div>
+                      <Slider defaultValue={[75]} max={100} step={1} className="w-full" />
+                    </div>
+                  ))}
+                </div>
+                <div className="space-y-2"><Label>Comments</Label><Textarea placeholder="Evaluation comments..." rows={3} /></div>
               </div>
-              <div className="space-y-2">
-                <Label>Role</Label>
-                <Select><SelectTrigger><SelectValue placeholder="Evaluator role" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="supervisor">Company Supervisor (30%)</SelectItem>
-                    <SelectItem value="advisor">Academic Advisor (30%)</SelectItem>
-                    <SelectItem value="evaluator">Academic Evaluator (40%)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-3">
-                <Label>Criteria Scores</Label>
-                {["Technical Skills", "Communication", "Teamwork", "Problem Solving", "Initiative"].map(c => (
-                  <div key={c} className="space-y-1">
-                    <div className="flex justify-between text-sm"><span>{c}</span><span className="text-muted-foreground">0/100</span></div>
-                    <Slider defaultValue={[75]} max={100} step={1} className="w-full" />
-                  </div>
-                ))}
-              </div>
-              <div className="space-y-2"><Label>Comments</Label><Textarea placeholder="Evaluation comments..." rows={3} /></div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
-              <Button className="gradient-primary" onClick={() => { setCreateOpen(false); toast.success("Evaluation created!"); }}>Submit Evaluation</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
+                <Button className="gradient-primary" onClick={() => { setCreateOpen(false); toast.success("Evaluation created!"); }}>Submit Evaluation</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
 
       <div className="flex gap-3">
@@ -102,7 +108,7 @@ export default function EvaluationsPage() {
                     <td className="p-4">
                       <div className="flex gap-1">
                         <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => { setSelected(e); setViewOpen(true); }}><Eye className="h-4 w-4" /></Button>
-                        {e.status !== "finalized" && <Button size="icon" variant="ghost" className="h-8 w-8"><Edit className="h-4 w-4" /></Button>}
+                        {canEvaluate && e.status !== "finalized" && <Button size="icon" variant="ghost" className="h-8 w-8"><Edit className="h-4 w-4" /></Button>}
                       </div>
                     </td>
                   </tr>
@@ -142,7 +148,7 @@ export default function EvaluationsPage() {
                 </div>
               </div>
               <div><p className="text-muted-foreground mb-1">Comments</p><p className="p-3 rounded-lg bg-muted/50">{selected.comments}</p></div>
-              {selected.status === "submitted" && (
+              {canEvaluate && selected.status === "submitted" && (
                 <Button className="w-full gradient-primary" onClick={() => { setViewOpen(false); toast.success("Evaluation finalized!"); }}>Finalize Evaluation</Button>
               )}
             </div>

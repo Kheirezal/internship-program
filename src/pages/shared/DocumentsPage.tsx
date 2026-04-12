@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import type { Document } from "@/types";
+import { useAuthStore } from "@/stores/authStore";
+import { CheckCircle2, XCircle } from "lucide-react";
 
 export default function DocumentsPage() {
   const [uploadOpen, setUploadOpen] = useState(false);
@@ -17,6 +19,8 @@ export default function DocumentsPage() {
   const [selected, setSelected] = useState<Document | null>(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const { user } = useAuthStore();
+  const isStudent = user?.role === "internship_student";
 
   const filtered = mockDocuments
     .filter(d => d.name.toLowerCase().includes(search.toLowerCase()))
@@ -107,12 +111,31 @@ export default function DocumentsPage() {
                 <div><p className="text-muted-foreground">Date</p><p className="font-medium">{selected.uploadedAt}</p></div>
                 <div><p className="text-muted-foreground">Status</p><StatusBadge status={selected.status} /></div>
               </div>
-              <div className="flex gap-2">
-                <Button variant="outline" className="gap-2"><Download className="h-4 w-4" /> Download</Button>
+              <div className="flex flex-wrap gap-2 pt-2 border-t mt-4">
+                <Button variant="outline" className="gap-2 flex-1"><Download className="h-4 w-4" /> Download</Button>
                 {selected.status === "pending" && (
                   <>
-                    <Button className="gradient-primary" onClick={() => { setViewOpen(false); toast.success("Document approved!"); }}>Approve</Button>
-                    <Button variant="destructive" onClick={() => { setViewOpen(false); toast.success("Document rejected!"); }}>Reject</Button>
+                    {isStudent && selected.uploadedBy === user?.name ? (
+                      <p className="text-xs text-muted-foreground w-full bg-muted/50 p-2 rounded italic">Waiting for coordinator/advisor approval.</p>
+                    ) : (
+                      <>
+                        <Button 
+                          className="gradient-primary flex-1 gap-2" 
+                          onClick={() => { setViewOpen(false); toast.success("Document approved!"); }}
+                        >
+                          <CheckCircle2 className="h-4 w-4" /> 
+                          {isStudent ? "Accept & Sign" : "Approve"}
+                        </Button>
+                        <Button 
+                          variant="destructive" 
+                          className="flex-1 gap-2"
+                          onClick={() => { setViewOpen(false); toast.success("Document rejected!"); }}
+                        >
+                          <XCircle className="h-4 w-4" /> 
+                          Reject
+                        </Button>
+                      </>
+                    )}
                   </>
                 )}
               </div>

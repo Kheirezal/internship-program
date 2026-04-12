@@ -1,18 +1,18 @@
 import type { Company, Placement, Logbook, Task, Attendance, Evaluation, Message, Grade, Complaint, CalendarEvent, Document, ActivityEvent } from "@/types";
 
 export const mockCompanies: Company[] = [
-  { id: "c1", name: "TechCorp Solutions", industry: "Technology", address: "123 Silicon Ave", contactPerson: "John Smith", contactEmail: "john@techcorp.com", contactPhone: "+1-555-0101", status: "active", studentsCount: 8 },
-  { id: "c2", name: "DataFlow Inc", industry: "Data Analytics", address: "456 Data Lane", contactPerson: "Jane Doe", contactEmail: "jane@dataflow.com", contactPhone: "+1-555-0102", status: "active", studentsCount: 5 },
-  { id: "c3", name: "CloudNine Systems", industry: "Cloud Computing", address: "789 Cloud Blvd", contactPerson: "Bob Wilson", contactEmail: "bob@cloudnine.com", contactPhone: "+1-555-0103", status: "pending", studentsCount: 0 },
-  { id: "c4", name: "GreenTech Energy", industry: "Renewable Energy", address: "321 Green St", contactPerson: "Lisa Green", contactEmail: "lisa@greentech.com", contactPhone: "+1-555-0104", status: "active", studentsCount: 3 },
-  { id: "c5", name: "MedTech Labs", industry: "Healthcare", address: "654 Health Rd", contactPerson: "Dr. Park", contactEmail: "park@medtech.com", contactPhone: "+1-555-0105", status: "inactive", studentsCount: 0 },
+  { id: "c1", name: "TechCorp Solutions", industry: "Technology", address: "123 Silicon Ave", contactPerson: "John Smith", contactEmail: "john@techcorp.com", contactPhone: "+1-555-0101", status: "active", studentsCount: 8, maxCapacity: 10, positions: ["Frontend Developer", "Backend Engineer"], requiredSkills: ["React", "Node.js", "TypeScript"], duration: "4 Months" },
+  { id: "c2", name: "DataFlow Inc", industry: "Data Analytics", address: "456 Data Lane", contactPerson: "Jane Doe", contactEmail: "jane@dataflow.com", contactPhone: "+1-555-0102", status: "active", studentsCount: 5, maxCapacity: 6, positions: ["Data Analyst", "Python Developer"], requiredSkills: ["Python", "SQL", "Pandas"], duration: "4 Months" },
+  { id: "c3", name: "CloudNine Systems", industry: "Cloud Computing", address: "789 Cloud Blvd", contactPerson: "Bob Wilson", contactEmail: "bob@cloudnine.com", contactPhone: "+1-555-0103", status: "pending", studentsCount: 0, maxCapacity: 8, positions: ["DevOps Intern"], requiredSkills: ["AWS", "Docker", "Linux"], duration: "6 Months" },
+  { id: "c4", name: "GreenTech Energy", industry: "Renewable Energy", address: "321 Green St", contactPerson: "Lisa Green", contactEmail: "lisa@greentech.com", contactPhone: "+1-555-0104", status: "active", studentsCount: 3, maxCapacity: 5, positions: ["Systems Engineer"], requiredSkills: ["C++", "Embedded Systems"], duration: "3 Months" },
+  { id: "c5", name: "MedTech Labs", industry: "Healthcare", address: "654 Health Rd", contactPerson: "Dr. Park", contactEmail: "park@medtech.com", contactPhone: "+1-555-0105", status: "inactive", studentsCount: 0, maxCapacity: 4, positions: ["QA Tester"], requiredSkills: ["Selenium", "Java"], duration: "4 Months" },
 ];
 
 export const mockPlacements: Placement[] = [
-  { id: "p1", studentId: "u5", studentName: "Alex Johnson", companyId: "c1", companyName: "TechCorp Solutions", advisorId: "u2", advisorName: "Prof. James Wilson", supervisorId: "u4", supervisorName: "Michael Brown", startDate: "2025-01-15", endDate: "2025-06-15", status: "active", progress: 65 },
-  { id: "p2", studentId: "s2", studentName: "Emily Davis", companyId: "c2", companyName: "DataFlow Inc", advisorId: "u2", advisorName: "Prof. James Wilson", supervisorId: "s6", supervisorName: "Sarah Lee", startDate: "2025-02-01", endDate: "2025-07-01", status: "active", progress: 45 },
-  { id: "p3", studentId: "s3", studentName: "Ryan Martinez", companyId: "c1", companyName: "TechCorp Solutions", advisorId: "u2", advisorName: "Prof. James Wilson", supervisorId: "u4", supervisorName: "Michael Brown", startDate: "2025-01-15", endDate: "2025-06-15", status: "active", progress: 80 },
-  { id: "p4", studentId: "s4", studentName: "Sophie Chen", companyId: "c4", companyName: "GreenTech Energy", advisorId: "a2", advisorName: "Dr. Emma Taylor", supervisorId: "s7", supervisorName: "Tom Green", startDate: "2024-09-01", endDate: "2025-02-01", status: "completed", progress: 100 },
+  { id: "p1", studentId: "u5", studentName: "Alex Johnson", companyId: "c1", companyName: "TechCorp Solutions", advisorId: "u2", advisorName: "Prof. James Wilson", supervisorId: "u4", supervisorName: "Michael Brown", startDate: "2025-01-15", endDate: "2025-06-15", status: "active", progress: 65, projectTitle: "Internal HR Management System API", projectStatus: "approved" },
+  { id: "p2", studentId: "s2", studentName: "Emily Davis", companyId: "c2", companyName: "DataFlow Inc", advisorId: "u2", advisorName: "Prof. James Wilson", supervisorId: "s6", supervisorName: "Sarah Lee", startDate: "2025-02-01", endDate: "2025-07-01", status: "active", progress: 45, projectTitle: "Customer Segmentation using K-Means", projectStatus: "pending_approval" },
+  { id: "p3", studentId: "s3", studentName: "Ryan Martinez", companyId: "c1", companyName: "TechCorp Solutions", advisorId: "u2", advisorName: "Prof. James Wilson", supervisorId: "u4", supervisorName: "Michael Brown", startDate: "2025-01-15", endDate: "2025-06-15", status: "pending_student_confirmation", progress: 0 },
+  { id: "p4", studentId: "s4", studentName: "Sophie Chen", companyId: "c4", companyName: "GreenTech Energy", advisorId: "a2", advisorName: "Dr. Emma Taylor", supervisorId: "s7", supervisorName: "Tom Green", startDate: "2024-09-01", endDate: "2025-02-01", status: "completed", progress: 100, projectTitle: "Solar Inverter Efficiency Monitoring", projectStatus: "approved" },
 ];
 
 export const mockLogbooks: Logbook[] = [
@@ -65,6 +65,7 @@ export const mockDocuments: Document[] = [
   { id: "d1", name: "Internship_Report_Draft.pdf", type: "pdf", size: "2.4 MB", uploadedBy: "Alex Johnson", uploadedAt: "2025-04-05", placementId: "p1", status: "pending" },
   { id: "d2", name: "Weekly_Summary_W14.docx", type: "docx", size: "156 KB", uploadedBy: "Alex Johnson", uploadedAt: "2025-04-07", placementId: "p1", status: "approved" },
   { id: "d3", name: "Company_Agreement.pdf", type: "pdf", size: "1.1 MB", uploadedBy: "TechCorp Solutions", uploadedAt: "2025-01-10", status: "approved" },
+  { id: "d4", name: "Placement_Offer_Letter.pdf", type: "pdf", size: "450 KB", uploadedBy: "Academic Office", uploadedAt: "2025-04-10", status: "pending" },
 ];
 
 export const mockActivities: ActivityEvent[] = [

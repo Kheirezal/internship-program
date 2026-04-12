@@ -22,8 +22,10 @@ import CompaniesPage from "@/pages/coordinator/CompaniesPage";
 // Advisor
 import AdvisorDashboard from "@/pages/advisor/AdvisorDashboard";
 
-// Evaluator
-import EvaluatorDashboard from "@/pages/evaluator/EvaluatorDashboard";
+// Department Head
+import DepartmentHeadDashboard from "@/pages/dept-head/DepartmentHeadDashboard";
+import StudentManagementPage from "@/pages/dept-head/StudentManagementPage";
+import DeptHeadUserManagement from "@/pages/dept-head/UserManagementPage";
 
 // Supervisor
 import SupervisorDashboard from "@/pages/supervisor/SupervisorDashboard";
@@ -55,6 +57,15 @@ import DefensePage from "@/pages/shared/DefensePage";
 
 import Index from "@/pages/Index";
 import NotFound from "@/pages/NotFound";
+
+// New Pages
+import PlacementDetailPage from "@/pages/shared/PlacementDetailPage";
+import UserManagementPage from "@/pages/coordinator/UserManagementPage";
+import FAQPage from "@/pages/shared/FAQPage";
+import ContactSupportPage from "@/pages/shared/ContactSupportPage";
+import EvaluationDetailPage from "@/pages/shared/EvaluationDetailPage";
+import LogbookDetailPage from "@/pages/shared/LogbookDetailPage";
+import SupervisorAccessPage from "@/pages/coordinator/SupervisorAccessPage";
 
 import { ThemeProvider } from "@/components/ui/theme-provider";
 
@@ -95,11 +106,15 @@ const App = () => (
               <Route path="/internship-coordinator/reports" element={<ReportsPage />} />
               <Route path="/internship-coordinator/complaints" element={<ComplaintsPage />} />
               <Route path="/internship-coordinator/messages" element={<MessagesPage />} />
+              <Route path="/internship-coordinator/users" element={<UserManagementPage />} />
+              <Route path="/internship-coordinator/placements/:id" element={<PlacementDetailPage />} />
+              <Route path="/internship-coordinator/students/:id" element={<PlacementDetailPage />} />
+              <Route path="/internship-coordinator/users/access" element={<SupervisorAccessPage />} />
             </Route>
           </Route>
 
           {/* Advisor routes */}
-          <Route element={<ProtectedRoute allowedRoles={["internship_advisor"]} />}>
+          <Route element={<ProtectedRoute allowedRoles={["internship_advisor", "department_head"]} />}>
             <Route element={<DashboardLayout />}>
               <Route path="/internship-advisor" element={<AdvisorDashboard />} />
               <Route path="/internship-advisor/students" element={<StudentsPage />} />
@@ -109,19 +124,23 @@ const App = () => (
               <Route path="/internship-advisor/calendar" element={<CalendarPage />} />
               <Route path="/internship-advisor/reports" element={<ReportsPage />} />
               <Route path="/internship-advisor/messages" element={<MessagesPage />} />
+              <Route path="/internship-advisor/attendance" element={<AttendancePage />} />
+              <Route path="/internship-advisor/placements/:id" element={<PlacementDetailPage />} />
+              <Route path="/internship-advisor/students/:id" element={<PlacementDetailPage />} />
             </Route>
           </Route>
 
-          {/* Evaluator routes */}
-          <Route element={<ProtectedRoute allowedRoles={["internship_evaluator"]} />}>
+          {/* Department Head */}
+          <Route element={<ProtectedRoute allowedRoles={["department_head"]} />}>
             <Route element={<DashboardLayout />}>
-              <Route path="/internship-evaluator" element={<EvaluatorDashboard />} />
-              <Route path="/internship-evaluator/evaluations" element={<EvaluationsPage />} />
-              <Route path="/internship-evaluator/defense" element={<DefensePage />} />
-              <Route path="/internship-evaluator/students" element={<StudentsPage />} />
-              <Route path="/internship-evaluator/calendar" element={<CalendarPage />} />
-              <Route path="/internship-evaluator/grades" element={<GradesPage />} />
-              <Route path="/internship-evaluator/messages" element={<MessagesPage />} />
+              <Route path="/department-head" element={<DepartmentHeadDashboard />} />
+              <Route path="/department-head/students" element={<StudentManagementPage />} />
+              <Route path="/department-head/users" element={<DeptHeadUserManagement />} />
+              <Route path="/department-head/companies" element={<CompaniesPage />} />
+              <Route path="/department-head/reports" element={<ReportsPage />} />
+              <Route path="/department-head/messages" element={<MessagesPage />} />
+              <Route path="/department-head/evaluations" element={<EvaluationsPage />} />
+              <Route path="/department-head/defense" element={<DefensePage />} />
             </Route>
           </Route>
 
@@ -135,6 +154,7 @@ const App = () => (
               <Route path="/company-supervisor/logbooks" element={<LogbooksPage />} />
               <Route path="/company-supervisor/evaluation" element={<EvaluationsPage />} />
               <Route path="/company-supervisor/messages" element={<MessagesPage />} />
+              <Route path="/company-supervisor/interns/:id" element={<PlacementDetailPage />} />
             </Route>
           </Route>
 
@@ -162,9 +182,11 @@ const App = () => (
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/help" element={<HelpPage />} />
-              <Route path="/faq" element={<HelpPage />} />
-              <Route path="/contact-support" element={<HelpPage />} />
+              <Route path="/faq" element={<FAQPage />} />
+              <Route path="/contact-support" element={<ContactSupportPage />} />
               <Route path="/messages" element={<MessagesPage />} />
+              <Route path="/evaluations/:id" element={<EvaluationDetailPage />} />
+              <Route path="/logbooks/:id" element={<LogbookDetailPage />} />
             </Route>
           </Route>
 

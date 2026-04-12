@@ -2,10 +2,32 @@ import StatsCard from "@/components/shared/StatsCard";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Building2, Users, Briefcase, AlertCircle, TrendingUp, Eye } from "lucide-react";
-import { mockCompanies, mockPlacements, mockComplaints, mockGrades } from "@/data/mockData";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { analyticsService } from "@/services/analyticsService";
+import { 
+  AlertCircle, 
+  TrendingUp, 
+  Eye, 
+  Bell, 
+  Info, 
+  ShieldAlert, 
+  CheckCircle2,
+  Building2,
+  Briefcase,
+  Users
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { 
+  ResponsiveContainer, 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  Tooltip, 
+  PieChart, 
+  Pie, 
+  Cell 
+} from "recharts";
+import { mockCompanies, mockPlacements, mockComplaints } from "@/data/mockData";
 
 const placementData = [
   { name: "Jan", count: 4 }, { name: "Feb", count: 6 }, { name: "Mar", count: 8 },
@@ -18,8 +40,18 @@ const statusData = [
   { name: "Pending", value: 2, color: "hsl(38, 92%, 50%)" },
 ];
 
-export default function CoordinatorDashboard() {
-  const navigate = useNavigate();
+ export default function CoordinatorDashboard() {
+   const navigate = useNavigate();
+   const insights = analyticsService.getCoordinatorInsights();
+
+   const getInsightIcon = (type: string) => {
+     switch (type) {
+       case "danger": return <ShieldAlert className="h-4 w-4 text-destructive" />;
+       case "warning": return <AlertCircle className="h-4 w-4 text-warning" />;
+       case "success": return <CheckCircle2 className="h-4 w-4 text-success" />;
+       default: return <Info className="h-4 w-4 text-primary" />;
+     }
+   };
 
   return (
     <div className="space-y-6 animate-in">
@@ -28,10 +60,29 @@ export default function CoordinatorDashboard() {
           <h1 className="text-2xl font-bold">Coordinator Dashboard</h1>
           <p className="text-muted-foreground text-sm">Overview of the internship program</p>
         </div>
-        <Button className="gradient-primary gap-2" onClick={() => navigate("/internship-coordinator/reports")}>
-          <TrendingUp className="h-4 w-4" /> View Reports
-        </Button>
-      </div>
+         <Button className="gradient-primary gap-2" onClick={() => navigate("/internship-coordinator/reports")}>
+           <TrendingUp className="h-4 w-4" /> View Reports
+         </Button>
+       </div>
+
+       {/* Auto Insights Section */}
+       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+         {insights.map((insight, idx) => (
+           <div 
+             key={idx} 
+             className={`flex items-center gap-3 p-3 rounded-lg border bg-card shadow-sm animate-in fade-in slide-in-from-top-2 duration-500`}
+             style={{ animationDelay: `${idx * 100}ms` }}
+           >
+             <div className="flex-shrink-0">{getInsightIcon(insight.type)}</div>
+             <p className="text-sm font-medium flex-1">{insight.message}</p>
+             {insight.link && (
+                <Button variant="ghost" size="sm" className="h-7 text-xs px-2" onClick={() => navigate(insight.link!)}>
+                  Detail
+                </Button>
+             )}
+           </div>
+         ))}
+       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="cursor-pointer" onClick={() => navigate("/internship-coordinator/companies")}><StatsCard title="Total Companies" value={mockCompanies.length} icon={Building2} trend={{ value: 12, positive: true }} description="from last semester" /></div>
