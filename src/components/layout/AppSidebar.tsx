@@ -53,13 +53,13 @@ const NAV_ITEMS: Record<UserRole, NavItem[]> = {
       path: "#", 
       icon: Star,
       children: [
-        { label: "Dashboard", path: "/internship-evaluator", icon: Home },
-        { label: "Evaluations", path: "/internship-evaluator/evaluations", icon: Star },
-        { label: "Defense", path: "/internship-evaluator/defense", icon: Target },
-        { label: "Students", path: "/internship-evaluator/students", icon: Users },
-        { label: "Calendar", path: "/internship-evaluator/calendar", icon: Calendar },
-        { label: "Grades", path: "/internship-evaluator/grades", icon: BarChart3 },
-        { label: "Messages", path: "/internship-evaluator/messages", icon: MessageSquare },
+        { label: "Dashboard", path: "/internship-advisor", icon: Home },
+        { label: "Evaluations", path: "/internship-advisor/evaluations", icon: Star },
+        { label: "Defense", path: "/internship-advisor/defense", icon: Target },
+        { label: "Students", path: "/internship-advisor/students", icon: Users },
+        { label: "Calendar", path: "/internship-advisor/calendar", icon: Calendar },
+        { label: "Grades", path: "/internship-advisor/grades", icon: BarChart3 },
+        { label: "Messages", path: "/internship-advisor/messages", icon: MessageSquare },
       ]
     },
   ],
@@ -212,7 +212,7 @@ export default function AppSidebar() {
                 className={({ isActive }) => cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
                   isActive
-                    ? "gradient-primary text-primary-foreground shadow-sm shadow-primary/20"
+                    ? "text-primary bg-primary/5 font-bold"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
               >
