@@ -27,13 +27,26 @@ export default function ComplaintsPage() {
   return (
     <div className="space-y-6 animate-in">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div><h1 className="text-2xl font-bold">Complaints</h1><p className="text-muted-foreground text-sm">Grade complaints and resolutions</p></div>
+        <div><h1 className="text-2xl font-bold">Complaints</h1><p className="text-muted-foreground text-sm">Complaints, disputes, and resolutions</p></div>
         {isStudent && (
           <Dialog open={createOpen} onOpenChange={setCreateOpen}>
             <DialogTrigger asChild><Button className="gradient-primary gap-2"><Plus className="h-4 w-4" /> New Complaint</Button></DialogTrigger>
             <DialogContent>
-              <DialogHeader><DialogTitle>Submit Grade Complaint</DialogTitle></DialogHeader>
+              <DialogHeader><DialogTitle>Submit Complaint</DialogTitle></DialogHeader>
               <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Category</Label>
+                  <Select defaultValue="grade_dispute">
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="grade_dispute">Grade Dispute</SelectItem>
+                      <SelectItem value="workplace">Workplace Issue</SelectItem>
+                      <SelectItem value="evaluation">Evaluation Concern</SelectItem>
+                      <SelectItem value="company">Company Issue</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="space-y-2"><Label>Subject</Label><Input placeholder="Brief description of the complaint" /></div>
                 <div className="space-y-2"><Label>Description</Label><Textarea placeholder="Provide detailed explanation of your complaint..." rows={5} /></div>
               </div>
@@ -64,13 +77,14 @@ export default function ComplaintsPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead><tr className="border-b text-left text-muted-foreground">
-                <th className="p-4 font-medium">Student</th><th className="p-4 font-medium">Subject</th><th className="p-4 font-medium">Date</th><th className="p-4 font-medium">Status</th><th className="p-4 font-medium">Actions</th>
+                <th className="p-4 font-medium">Student</th><th className="p-4 font-medium">Subject</th><th className="p-4 font-medium">Category</th><th className="p-4 font-medium">Date</th><th className="p-4 font-medium">Status</th><th className="p-4 font-medium">Actions</th>
               </tr></thead>
               <tbody>
                 {filtered.map((c) => (
                   <tr key={c.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
                     <td className="p-4 font-medium">{c.studentName}</td>
                     <td className="p-4">{c.subject}</td>
+                    <td className="p-4"><span className="px-2 py-0.5 rounded text-[10px] font-medium bg-muted capitalize">{c.category.replace("_", " ")}</span></td>
                     <td className="p-4">{new Date(c.createdAt).toLocaleDateString()}</td>
                     <td className="p-4"><StatusBadge status={c.status} /></td>
                     <td className="p-4">
