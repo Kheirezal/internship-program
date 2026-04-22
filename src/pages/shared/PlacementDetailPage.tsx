@@ -5,9 +5,9 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { mockPlacements, mockLogbooks, mockAttendance, mockTasks, mockEvaluations } from "@/data/mockData";
-import { 
-  Building2, User, Calendar, Clock, BookOpen, 
-  CheckSquare, Star, ArrowLeft, Download, 
+import {
+  Building2, User, Calendar, Clock, BookOpen,
+  CheckSquare, Star, ArrowLeft, Download,
   Mail, Phone, MapPin, Briefcase, TrendingUp,
   FileText, Activity, ShieldCheck
 } from "lucide-react";
@@ -16,7 +16,7 @@ import { toast } from "sonner";
 export default function PlacementDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  
+
   const placement = mockPlacements.find(p => p.id === id) || mockPlacements[0];
   const studentLogbooks = mockLogbooks.filter(l => l.studentId === placement.studentId);
   const studentAttendance = mockAttendance.filter(a => a.studentId === placement.studentId);
@@ -34,9 +34,9 @@ export default function PlacementDetailPage() {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => navigate(-1)}
             className="rounded-full hover:bg-primary/10 hover:text-primary transition-all"
           >
@@ -51,9 +51,9 @@ export default function PlacementDetailPage() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Button 
-            variant="outline" 
-            className="rounded-full gap-2 border-primary/20 hover:bg-primary/5 hover:border-primary active:scale-95 transition-all" 
+          <Button
+            variant="outline"
+            className="rounded-full gap-2 border-primary/20 hover:bg-primary/5 hover:border-primary active:scale-95 transition-all"
             onClick={() => {
               toast.success("Preparing export...", { description: "Your report will be ready in a moment." });
               setTimeout(() => toast.success("Download ready!", { icon: <Download className="h-4 w-4" /> }), 1500);
@@ -61,7 +61,7 @@ export default function PlacementDetailPage() {
           >
             <Download className="h-4 w-4" /> Export Dossier
           </Button>
-          <Button 
+          <Button
             className="rounded-full gradient-primary shadow-lg shadow-primary/20 active:scale-95 transition-all gap-2"
             onClick={() => navigate("/messages")}
           >
@@ -97,7 +97,7 @@ export default function PlacementDetailPage() {
         <div className="space-y-6">
           <Card className="shadow-elevated border-none overflow-hidden group">
             <div className="h-28 bg-gradient-to-br from-primary via-primary/80 to-blue-600 relative overflow-hidden">
-               <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+              <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
             </div>
             <CardContent className="pt-0 relative px-6">
               <div className="absolute -top-10 left-6">
@@ -110,14 +110,14 @@ export default function PlacementDetailPage() {
                 <p className="text-muted-foreground text-sm flex items-center gap-1 font-medium">
                   ID: <span className="text-primary font-mono">{placement.studentId}</span>
                 </p>
-                
+
                 <div className="mt-4 flex flex-wrap gap-2">
-                   <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/50 text-xs font-medium text-muted-foreground border border-border/50">
-                     <Mail className="h-3.5 w-3.5" /> student@imem.edu
-                   </div>
-                   <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/50 text-xs font-medium text-muted-foreground border border-border/50">
-                     <Phone className="h-3.5 w-3.5" /> +251 91 123 456
-                   </div>
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/50 text-xs font-medium text-muted-foreground border border-border/50">
+                    <Mail className="h-3.5 w-3.5" /> student@imem.edu
+                  </div>
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/50 text-xs font-medium text-muted-foreground border border-border/50">
+                    <Phone className="h-3.5 w-3.5" /> +251 91 123 456
+                  </div>
                 </div>
 
                 <div className="mt-6 space-y-4 pt-4 border-t border-dashed">
@@ -127,9 +127,9 @@ export default function PlacementDetailPage() {
                       <span className="text-primary">{placement.progress}%</span>
                     </div>
                     <div className="h-2.5 rounded-full bg-muted overflow-hidden">
-                      <div 
-                        className="h-full rounded-full bg-gradient-to-r from-primary to-blue-500" 
-                        style={{ width: `${placement.progress}%` }} 
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-primary to-blue-500"
+                        style={{ width: `${placement.progress}%` }}
                       />
                     </div>
                   </div>
@@ -150,15 +150,15 @@ export default function PlacementDetailPage() {
                 <p className="text-muted-foreground flex items-center gap-1 text-xs font-medium">
                   <MapPin className="h-3.5 w-3.5 text-primary" /> Addis Ababa HQ
                 </p>
-                
+
                 <div className="mt-4 grid grid-cols-1 gap-3">
                   <div className="flex items-center gap-3">
                     <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
                       <ShieldCheck className="h-4 w-4" />
                     </div>
                     <div>
-                       <p className="text-[10px] text-muted-foreground font-bold italic uppercase">Supervisor</p>
-                       <p className="font-semibold">{placement.supervisorName}</p>
+                      <p className="text-[10px] text-muted-foreground font-bold italic uppercase">Supervisor</p>
+                      <p className="font-semibold">{placement.supervisorName}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -166,13 +166,13 @@ export default function PlacementDetailPage() {
                       <Star className="h-4 w-4" />
                     </div>
                     <div>
-                       <p className="text-[10px] text-muted-foreground font-bold italic uppercase">Academic Advisor</p>
-                       <p className="font-semibold">{placement.advisorName}</p>
+                      <p className="text-[10px] text-muted-foreground font-bold italic uppercase">Academic Advisor</p>
+                      <p className="font-semibold">{placement.advisorName}</p>
                     </div>
                   </div>
                 </div>
               </div>
-              
+
               <div className="pt-1 px-1">
                 <p className="text-[10px] text-muted-foreground font-bold uppercase mb-2">Duration Contract</p>
                 <div className="flex items-center gap-2 p-3 rounded-lg bg-card border border-dashed">
@@ -194,9 +194,9 @@ export default function PlacementDetailPage() {
                 { id: "tasks", label: "Deliverables", icon: CheckSquare },
                 { id: "evaluations", label: "Performance", icon: Star },
               ].map(tab => (
-                <TabsTrigger 
+                <TabsTrigger
                   key={tab.id}
-                  value={tab.id} 
+                  value={tab.id}
                   className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:bg-transparent px-1 py-4 text-sm font-semibold flex items-center gap-2 transition-all opacity-60 data-[state=active]:opacity-100"
                 >
                   <tab.icon className="h-4 w-4" /> {tab.label}
@@ -207,10 +207,10 @@ export default function PlacementDetailPage() {
             <TabsContent value="logbooks" className="mt-0 space-y-4 animate-in slide-in-from-bottom-2 duration-300">
               {studentLogbooks.length === 0 ? (
                 <div className="py-20 text-center rounded-2xl border border-dashed flex flex-col items-center gap-3">
-                   <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
-                     <FileText className="h-6 w-6" />
-                   </div>
-                   <p className="font-semibold text-muted-foreground">No documentation tracks found.</p>
+                  <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
+                    <FileText className="h-6 w-6" />
+                  </div>
+                  <p className="font-semibold text-muted-foreground">No documentation tracks found.</p>
                 </div>
               ) : (
                 studentLogbooks.map((l) => (
@@ -227,9 +227,9 @@ export default function PlacementDetailPage() {
                             <p className="text-lg font-bold tracking-tight">{l.title}</p>
                             <p className="text-sm text-muted-foreground font-medium leading-relaxed line-clamp-2">{l.content}</p>
                           </div>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
+                          <Button
+                            variant="ghost"
+                            size="icon"
                             className="h-9 w-9 rounded-full hover:bg-primary/10 hover:text-primary transition-all"
                             onClick={() => navigate(`/logbooks/${l.id}`)}
                           >
@@ -313,7 +313,7 @@ export default function PlacementDetailPage() {
                       <CardDescription className="font-semibold text-xs text-muted-foreground">Weight: {e.weight}%</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-5 p-5">
-                       <div className="space-y-3">
+                      <div className="space-y-3">
                         {e.criteria.map(c => (
                           <div key={c.name} className="space-y-1">
                             <div className="flex items-center justify-between text-xs font-bold">
@@ -321,22 +321,22 @@ export default function PlacementDetailPage() {
                               <span className="text-primary">{c.score} <span className="text-muted-foreground font-normal">/ {c.maxScore}</span></span>
                             </div>
                             <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-                               <div 
-                                 className="h-full bg-primary transition-all duration-1000" 
-                                 style={{ width: `${(c.score / c.maxScore) * 100}%` }}
-                               />
+                              <div
+                                className="h-full bg-primary transition-all duration-1000"
+                                style={{ width: `${(c.score / c.maxScore) * 100}%` }}
+                              />
                             </div>
                           </div>
                         ))}
                       </div>
-                      
+
                       <div className="p-3 rounded-xl bg-muted/30 border border-dashed text-xs">
-                         <p className="text-[10px] uppercase font-bold text-muted-foreground mb-1">Evaluator Comments</p>
-                         <p className="font-medium text-muted-foreground leading-relaxed">"{e.comments}"</p>
+                        <p className="text-[10px] uppercase font-bold text-muted-foreground mb-1">Evaluator Comments</p>
+                        <p className="font-medium text-muted-foreground leading-relaxed">"{e.comments}"</p>
                       </div>
 
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         className="w-full rounded-xl h-10 font-bold uppercase text-[11px] tracking-wide gap-2 border-primary/20 hover:bg-primary hover:text-white transition-all"
                         onClick={() => navigate(`/evaluations/${e.id}`)}
                       >
