@@ -26,7 +26,8 @@ import { useLocation } from "react-router-dom";
 
 type ViewMode = "year" | "list";
 
-const STORAGE_KEY = "imem-coordinator-calendar-events";
+const STORAGE_KEY = "imem-program-calendar-events";
+const LEGACY_STORAGE_KEY = "imem-coordinator-calendar-events";
 
 const EMPTY_FORM = {
   title: "",
@@ -39,7 +40,7 @@ const EMPTY_FORM = {
 
 function loadEvents(): CalendarEvent[] {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(STORAGE_KEY) ?? localStorage.getItem(LEGACY_STORAGE_KEY);
     if (raw) return JSON.parse(raw) as CalendarEvent[];
   } catch {
     /* use defaults */
@@ -70,11 +71,14 @@ function formatListDate(dateKey: string) {
 
 export default function CalendarPage() {
   const location = useLocation();
-  const isCoordinator = location.pathname.startsWith("/internship-coordinator/calendar");
+  const isDepartmentHead = location.pathname.startsWith("/department-head/calendar");
+  const hasYearCalendar =
+    location.pathname.startsWith("/internship-coordinator/calendar") || isDepartmentHead;
+  const canManageEvents = hasYearCalendar;
   const currentYear = new Date().getFullYear();
 
   const [events, setEvents] = useState<CalendarEvent[]>(() => loadEvents());
-  const [viewMode, setViewMode] = useState<ViewMode>(isCoordinator ? "year" : "list");
+  const [viewMode, setViewMode] = useState<ViewMode>(hasYearCalendar ? "year" : "list");
   const [calendarYear, setCalendarYear] = useState(currentYear);
   const [createOpen, setCreateOpen] = useState(false);
   const [viewOpen, setViewOpen] = useState(false);
@@ -87,8 +91,8 @@ export default function CalendarPage() {
 
   const persistEvents = useCallback((next: CalendarEvent[]) => {
     setEvents(next);
-    if (isCoordinator) saveEvents(next);
-  }, [isCoordinator]);
+    if (canManageEvents) saveEvents(next);
+  }, [canManageEvents]);
 
   const filtered = useMemo(
     () =>
@@ -300,7 +304,7 @@ export default function CalendarPage() {
     </>
   );
 
-  if (isCoordinator && viewMode === "year") {
+  if (hasYearCalendar && viewMode === "year") {
     return (
       <div className="space-y-6 animate-in">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
@@ -353,12 +357,12 @@ export default function CalendarPage() {
           <p className="text-muted-foreground text-sm">Upcoming events and deadlines ({filtered.length})</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {isCoordinator && (
+          {canManageEvents && (
             <Button variant="outline" className="gap-2" onClick={() => setViewMode("year")}>
               <LayoutGrid className="h-4 w-4" /> Year calendar view
             </Button>
           )}
-          {isCoordinator && (
+          {canManageEvents && (
             <Button className="gradient-primary gap-2" onClick={() => setCreateOpen(true)}>
               <Plus className="h-4 w-4" /> New Event
             </Button>

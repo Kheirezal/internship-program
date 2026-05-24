@@ -24,6 +24,22 @@ import ApplicationsPage from "@/pages/coordinator/ApplicationsPage";
 
 // Advisor
 import AdvisorDashboard from "@/pages/advisor/AdvisorDashboard";
+import AdvisorOversightLayout from "@/pages/advisor/oversight/AdvisorOversightLayout";
+import AdvisorProgressReportsPage from "@/pages/advisor/oversight/AdvisorProgressReportsPage";
+import AdvisorProgressReportDetailPage from "@/pages/advisor/oversight/AdvisorProgressReportDetailPage";
+import AdvisorAcademicRelevancePage from "@/pages/advisor/oversight/AdvisorAcademicRelevancePage";
+import AdvisorFollowUpsPage from "@/pages/advisor/oversight/AdvisorFollowUpsPage";
+import AdvisorFinalReportsPage from "@/pages/advisor/oversight/AdvisorFinalReportsPage";
+import AdvisorFinalReportDetailPage from "@/pages/advisor/oversight/AdvisorFinalReportDetailPage";
+import AdvisorDefenseReadinessPage from "@/pages/advisor/oversight/AdvisorDefenseReadinessPage";
+import AdvisorDefenseReadinessDetailPage from "@/pages/advisor/oversight/AdvisorDefenseReadinessDetailPage";
+import AdvisorResearchGuidancePage from "@/pages/advisor/oversight/AdvisorResearchGuidancePage";
+import AdvisorGuidanceDetailPage from "@/pages/advisor/oversight/AdvisorGuidanceDetailPage";
+import AdvisorOversightSiteVisitsPage from "@/pages/advisor/oversight/AdvisorOversightSiteVisitsPage";
+import AdvisorOversightSubmissionsPage from "@/pages/advisor/oversight/AdvisorOversightSubmissionsPage";
+import AdvisorOversightDefenseSchedulePage from "@/pages/advisor/oversight/AdvisorOversightDefenseSchedulePage";
+import AdvisorOversightMessagesPage from "@/pages/advisor/oversight/AdvisorOversightMessagesPage";
+import AdvisorOversightCalendarPage from "@/pages/advisor/oversight/AdvisorOversightCalendarPage";
 
 // Department Head
 import DepartmentHeadDashboard from "@/pages/dept-head/DepartmentHeadDashboard";
@@ -56,6 +72,7 @@ import TakeExamPage from "@/pages/student/TakeExamPage";
 // Shared Pages
 import PlacementsPage from "@/pages/shared/PlacementsPage";
 import LogbooksPage from "@/pages/shared/LogbooksPage";
+import StudentDocumentSubmissionsPage from "@/pages/shared/StudentDocumentSubmissionsPage";
 import EvaluationsPage from "@/pages/shared/EvaluationsPage";
 import CalendarPage from "@/pages/shared/CalendarPage";
 import MessagesPage from "@/pages/shared/MessagesPage";
@@ -153,6 +170,24 @@ const App = () => (
               <Route path="/internship-advisor/placements/:id" element={<PlacementDetailPage />} />
               <Route path="/internship-advisor/students/:id" element={<PlacementDetailPage />} />
               <Route path="/internship-advisor/site-visits" element={<SiteVisitsPage />} />
+              <Route path="/internship-advisor/oversight" element={<AdvisorOversightLayout />}>
+                <Route index element={<Navigate to="progress" replace />} />
+                <Route path="progress" element={<AdvisorProgressReportsPage />} />
+                <Route path="progress/:reportId" element={<AdvisorProgressReportDetailPage />} />
+                <Route path="relevance" element={<AdvisorAcademicRelevancePage />} />
+                <Route path="followup" element={<AdvisorFollowUpsPage />} />
+                <Route path="final-docs" element={<AdvisorFinalReportsPage />} />
+                <Route path="final-docs/:reportId" element={<AdvisorFinalReportDetailPage />} />
+                <Route path="defense" element={<AdvisorDefenseReadinessPage />} />
+                <Route path="defense/:reviewId" element={<AdvisorDefenseReadinessDetailPage />} />
+                <Route path="guidance" element={<AdvisorResearchGuidancePage />} />
+                <Route path="guidance/:noteId" element={<AdvisorGuidanceDetailPage />} />
+                <Route path="site-visits" element={<AdvisorOversightSiteVisitsPage />} />
+                <Route path="submissions" element={<AdvisorOversightSubmissionsPage />} />
+                <Route path="defense-schedule" element={<AdvisorOversightDefenseSchedulePage />} />
+                <Route path="messages" element={<AdvisorOversightMessagesPage />} />
+                <Route path="calendar" element={<AdvisorOversightCalendarPage />} />
+              </Route>
             </Route>
           </Route>
 
@@ -165,7 +200,6 @@ const App = () => (
               <Route path="/department-head/companies" element={<CompaniesPage />} />
               <Route path="/department-head/reports" element={<ReportsPage />} />
               <Route path="/department-head/messages" element={<MessagesPage />} />
-              <Route path="/department-head/evaluations" element={<EvaluationsPage />} />
               <Route path="/department-head/defense" element={<DefensePage />} />
               <Route path="/department-head/grades" element={<DHGradeApprovalPage />} />
               <Route path="/department-head/announcements" element={<AnnouncementsPage />} />
@@ -226,6 +260,8 @@ const App = () => (
               <Route path="/faq" element={<FAQPage />} />
               <Route path="/contact-support" element={<ContactSupportPage />} />
               <Route path="/messages" element={<MessagesPage />} />
+              <Route path="/internship-advisor/submissions" element={<StudentDocumentSubmissionsPage />} />
+              <Route path="/company-supervisor/submissions" element={<StudentDocumentSubmissionsPage />} />
               <Route path="/evaluations/:id" element={<EvaluationDetailPage />} />
               <Route path="/logbooks/:id" element={<LogbookDetailPage />} />
             </Route>

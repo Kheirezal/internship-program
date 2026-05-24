@@ -1,4 +1,4 @@
-import { mockPlacements, mockLogbooks, mockAttendance, mockTasks, mockEvaluations, mockGrades } from "@/data/mockData";
+import { mockPlacements, mockLogbooks, mockAttendance, mockTasks, mockEvaluations, mockGrades, mockStudentDocumentSubmissions, mockSiteVisits } from "@/data/mockData";
 
 export interface DashboardInsight {
   type: "warning" | "info" | "success" | "danger";
@@ -57,17 +57,48 @@ export const analyticsService = {
     return insights;
   },
 
-  getAdvisorInsights: (): DashboardInsight[] => {
+  getAdvisorInsights: (advisorId?: string): DashboardInsight[] => {
     const insights: DashboardInsight[] = [];
-    
-    const pendingLogbooks = mockLogbooks.filter(l => l.status === "submitted").length;
+    const myPlacementIds = advisorId
+      ? mockPlacements.filter((p) => p.advisorId === advisorId).map((p) => p.id)
+      : mockPlacements.map((p) => p.id);
+
+    const myLogbooks = mockLogbooks.filter((l) => myPlacementIds.includes(l.placementId));
+    const pendingLogbooks = myLogbooks.filter((l) => l.status === "submitted").length;
     if (pendingLogbooks > 0) {
       insights.push({ type: "warning", message: `${pendingLogbooks} logbooks need your review`, count: pendingLogbooks, link: "/internship-advisor/logbooks" });
     }
 
-    const absentStudents = mockAttendance.filter(a => a.status === "absent").length;
+    const pendingSubmissions = mockStudentDocumentSubmissions.filter(
+      (s) => s.recipientRole === "internship_advisor" && s.status === "pending" &&
+        (!advisorId || mockPlacements.find((p) => p.id === s.placementId)?.advisorId === advisorId)
+    ).length;
+    if (pendingSubmissions > 0) {
+      insights.push({ type: "info", message: `${pendingSubmissions} document submissions awaiting approval`, count: pendingSubmissions, link: "/internship-advisor/submissions" });
+    }
+
+    const upcomingVisits = mockSiteVisits.filter(
+      (v) => v.status === "scheduled" && (!advisorId || v.advisorId === advisorId)
+    ).length;
+    if (upcomingVisits > 0) {
+      insights.push({ type: "info", message: `${upcomingVisits} site visits scheduled this month`, count: upcomingVisits, link: "/internship-advisor/site-visits" });
+    }
+
+    const lateAttendance = mockAttendance.filter((a) => a.status === "late").length;
+    if (lateAttendance > 0) {
+      insights.push({ type: "warning", message: `${lateAttendance} late check-ins among your students`, count: lateAttendance, link: "/internship-advisor/attendance" });
+    }
+
+    const absentStudents = mockAttendance.filter((a) => a.status === "absent").length;
     if (absentStudents > 0) {
-      insights.push({ type: "danger", message: `${absentStudents} absence alerts recorded today`, count: absentStudents, link: "/internship-advisor/students" });
+      insights.push({ type: "danger", message: `${absentStudents} absence alerts recorded today`, count: absentStudents, link: "/internship-advisor/attendance" });
+    }
+
+    const nearCompletion = mockPlacements.filter(
+      (p) => myPlacementIds.includes(p.id) && p.progress >= 80 && p.status === "active"
+    ).length;
+    if (nearCompletion > 0) {
+      insights.push({ type: "success", message: `${nearCompletion} students nearing internship completion`, count: nearCompletion, link: "/internship-advisor/students" });
     }
 
     return insights;

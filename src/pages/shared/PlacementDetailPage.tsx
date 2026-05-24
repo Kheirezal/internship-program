@@ -12,18 +12,36 @@ import {
   FileText, Activity, ShieldCheck
 } from "lucide-react";
 import { toast } from "sonner";
+import { useAuthStore } from "@/stores/authStore";
 
 export default function PlacementDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuthStore();
 
-  const placement = mockPlacements.find(p => p.id === id) || mockPlacements[0];
-  const studentLogbooks = mockLogbooks.filter(l => l.studentId === placement.studentId);
-  const studentAttendance = mockAttendance.filter(a => a.studentId === placement.studentId);
-  const studentTasks = mockTasks.filter(t => t.assignedTo === placement.studentId);
-  const studentEvaluations = mockEvaluations.filter(e => e.placementId === placement.id);
+  const found = mockPlacements.find((p) => p.id === id);
+  const placement =
+    user?.role === "internship_advisor" && user.id
+      ? found && found.advisorId === user.id
+        ? found
+        : undefined
+      : found;
 
-  if (!placement) return <div className="flex h-96 items-center justify-center text-muted-foreground">Placement not found</div>;
+  if (!placement) {
+    return (
+      <div className="flex h-96 flex-col items-center justify-center gap-3 text-muted-foreground">
+        <p>Placement not found or you do not have access.</p>
+        <Button variant="outline" onClick={() => navigate(-1)}>
+          Go back
+        </Button>
+      </div>
+    );
+  }
+
+  const studentLogbooks = mockLogbooks.filter((l) => l.studentId === placement.studentId);
+  const studentAttendance = mockAttendance.filter((a) => a.studentId === placement.studentId);
+  const studentTasks = mockTasks.filter((t) => t.assignedTo === placement.studentId);
+  const studentEvaluations = mockEvaluations.filter((e) => e.placementId === placement.id);
 
   const presentDays = studentAttendance.filter(a => a.status === "present" || a.status === "late").length;
   const attendanceRate = studentAttendance.length > 0 ? Math.round((presentDays / studentAttendance.length) * 100) : 0;
@@ -70,27 +88,28 @@ export default function PlacementDetailPage() {
         </div>
       </div>
 
-      {/* Quick Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          { label: "Logbooks", value: studentLogbooks.length, icon: BookOpen, color: "text-blue-500", bg: "bg-blue-500/10" },
-          { label: "Attendance", value: `${attendanceRate}%`, icon: Clock, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-          { label: "Tasks Done", value: `${completedTasks}/${studentTasks.length}`, icon: CheckSquare, color: "text-amber-500", bg: "bg-amber-500/10" },
-          { label: "Eval Score", value: studentEvaluations.length > 0 ? `${studentEvaluations[0].score}%` : "---", icon: TrendingUp, color: "text-purple-500", bg: "bg-purple-500/10" },
-        ].map((stat, i) => (
-          <Card key={i} className="border-none shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden group hover:shadow-md transition-all">
-            <CardContent className="p-4 flex items-center gap-4">
-              <div className={`h-12 w-12 rounded-xl ${stat.bg} ${stat.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                <stat.icon className="h-6 w-6" />
-              </div>
-              <div>
-                <p className="text-xl font-bold">{stat.value}</p>
-                <p className="text-xs font-medium text-muted-foreground">{stat.label}</p>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {user?.role !== "internship_advisor" && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { label: "Logbooks", value: studentLogbooks.length, icon: BookOpen, color: "text-blue-500", bg: "bg-blue-500/10" },
+            { label: "Attendance", value: `${attendanceRate}%`, icon: Clock, color: "text-emerald-500", bg: "bg-emerald-500/10" },
+            { label: "Tasks Done", value: `${completedTasks}/${studentTasks.length}`, icon: CheckSquare, color: "text-amber-500", bg: "bg-amber-500/10" },
+            { label: "Eval Score", value: studentEvaluations.length > 0 ? `${studentEvaluations[0].score}%` : "---", icon: TrendingUp, color: "text-purple-500", bg: "bg-purple-500/10" },
+          ].map((stat, i) => (
+            <Card key={i} className="border-none shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden group hover:shadow-md transition-all">
+              <CardContent className="p-4 flex items-center gap-4">
+                <div className={`h-12 w-12 rounded-xl ${stat.bg} ${stat.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                  <stat.icon className="h-6 w-6" />
+                </div>
+                <div>
+                  <p className="text-xl font-bold">{stat.value}</p>
+                  <p className="text-xs font-medium text-muted-foreground">{stat.label}</p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Profile Column */}
