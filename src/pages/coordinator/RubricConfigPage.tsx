@@ -4,19 +4,30 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { mockRubricConfigs } from "@/data/mockData";
-import { Settings, Plus, Trash2, Save, Scale } from "lucide-react";
+import { Settings, Plus, Trash2, Save, Scale, ArrowLeft } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Slider } from "@/components/ui/slider";
 
 export default function RubricConfigPage() {
+  const navigate = useNavigate();
   const rubric = mockRubricConfigs[0];
   const [editOpen, setEditOpen] = useState(false);
   const [weights, setWeights] = useState(rubric.weights);
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
+      <Button
+        variant="ghost"
+        size="sm"
+        className="gap-2 -ml-2 text-muted-foreground"
+        onClick={() => navigate("/internship-coordinator/grades")}
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back to Grade Calculation
+      </Button>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Evaluation Rubric</h1>

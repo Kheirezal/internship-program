@@ -3,21 +3,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { mockPlacements } from "@/data/mockData";
-import { Search, Eye, User, Building2, TrendingUp } from "lucide-react";
+import { Search, Eye, Building2, Send } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { Placement } from "@/types";
 import { mockLogbooks, mockAttendance, mockGrades, mockTasks } from "@/data/mockData";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
 
 export default function StudentsPage() {
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuthStore();
-  
+
   const rolePath = user?.role.replace(/_/g, "-") || "shared";
   const subPath = user?.role === "company_supervisor" ? "interns" : "students";
+  const isCoordinatorStudentsPage = location.pathname.startsWith("/internship-coordinator/students");
 
   const filtered = mockPlacements.filter(p => p.studentName.toLowerCase().includes(search.toLowerCase()));
 
@@ -36,7 +38,22 @@ export default function StudentsPage() {
 
   return (
     <div className="space-y-6 animate-in">
-      <div><h1 className="text-2xl font-bold">Students</h1><p className="text-muted-foreground text-sm">All internship students</p></div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold">Students</h1>
+          <p className="text-muted-foreground text-sm">All internship students</p>
+        </div>
+        {isCoordinatorStudentsPage && (
+          <Button
+            variant="outline"
+            className="gap-2 shrink-0"
+            onClick={() => navigate("/internship-coordinator/applications")}
+          >
+            <Send className="h-4 w-4" />
+            Applications
+          </Button>
+        )}
+      </div>
 
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { mockGrades, mockEvaluations, mockRubricConfigs } from "@/data/mockData";
-import { Calculator, Send, RefreshCw, CheckCircle2, Eye, AlertCircle } from "lucide-react";
+import { Calculator, Send, RefreshCw, CheckCircle2, Eye, AlertCircle, Scale } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import type { Grade } from "@/types";
@@ -26,6 +27,7 @@ const DH_STATUS_COLORS: Record<string, string> = {
 };
 
 export default function GradeCalculationPage() {
+  const navigate = useNavigate();
   const [viewOpen, setViewOpen] = useState(false);
   const [selected, setSelected] = useState<Grade | null>(null);
   const [filter, setFilter] = useState("all");
@@ -59,7 +61,14 @@ export default function GradeCalculationPage() {
           <h1 className="text-2xl font-bold">Grade Calculation</h1>
           <p className="text-muted-foreground text-sm">Calculate final grades and submit to Department Head</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="outline"
+            className="gap-2"
+            onClick={() => navigate("/internship-coordinator/rubric")}
+          >
+            <Scale className="h-4 w-4" /> Rubric Config
+          </Button>
           <Button variant="outline" className="gap-2" onClick={() => toast.success(`${readyToSubmit.length} grades recalculated!`)}>
             <RefreshCw className="h-4 w-4" /> Recalculate All
           </Button>

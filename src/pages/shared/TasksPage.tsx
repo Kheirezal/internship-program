@@ -6,15 +6,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { mockTasks, mockPlacements } from "@/data/mockData";
-import { Plus, Eye, Edit, CheckCircle2 } from "lucide-react";
-import { useState } from "react";
+import { Plus, Eye, CheckCircle2 } from "lucide-react";
+import { useMemo, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import type { Task } from "@/types";
 import { useAuthStore } from "@/stores/authStore";
 
+const TASK_STATUS_OPTIONS: { value: Task["status"]; label: string }[] = [
+  { value: "pending", label: "Pending" },
+  { value: "in_progress", label: "In Progress" },
+  { value: "completed", label: "Done" },
+];
+
 export default function TasksPage() {
   const { user } = useAuthStore();
+  const [tasks, setTasks] = useState<Task[]>(() => [...mockTasks]);
   const [createOpen, setCreateOpen] = useState(false);
   const [viewOpen, setViewOpen] = useState(false);
   const [selected, setSelected] = useState<Task | null>(null);
@@ -22,14 +29,53 @@ export default function TasksPage() {
   const [priorityFilter, setPriorityFilter] = useState("all");
 
   const isSupervisor = user?.role === "company_supervisor";
-  const filtered = mockTasks
-    .filter(t => statusFilter === "all" || t.status === statusFilter)
-    .filter(t => priorityFilter === "all" || t.priority === priorityFilter);
+  const isStudent = user?.role === "internship_student";
+
+  const updateTaskStatus = (taskId: string, status: Task["status"]) => {
+    setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, status } : t)));
+    setSelected((prev) => (prev?.id === taskId ? { ...prev, status } : prev));
+    toast.success("Task status updated");
+  };
+
+  const filtered = useMemo(() => {
+    let list = tasks;
+    if (isStudent && user?.id) {
+      list = list.filter((t) => t.assignedTo === user.id);
+    }
+    return list
+      .filter((t) => statusFilter === "all" || t.status === statusFilter)
+      .filter((t) => priorityFilter === "all" || t.priority === priorityFilter);
+  }, [tasks, isStudent, user?.id, statusFilter, priorityFilter]);
+
+  const renderStatusControl = (task: Task) => {
+    if (!isStudent) {
+      return <StatusBadge status={task.status} />;
+    }
+    return (
+      <Select value={task.status} onValueChange={(value) => updateTaskStatus(task.id, value as Task["status"])}>
+        <SelectTrigger className="w-[132px] h-8 text-xs font-medium">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {TASK_STATUS_OPTIONS.map((opt) => (
+            <SelectItem key={opt.value} value={opt.value}>
+              {opt.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    );
+  };
 
   return (
     <div className="space-y-6 animate-in">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div><h1 className="text-2xl font-bold">Tasks</h1><p className="text-muted-foreground text-sm">Manage assigned tasks</p></div>
+        <div>
+          <h1 className="text-2xl font-bold">Tasks</h1>
+          <p className="text-muted-foreground text-sm">
+            {isStudent ? "Update status for tasks assigned by your company supervisor" : "Manage assigned tasks"}
+          </p>
+        </div>
         {isSupervisor && (
           <Dialog open={createOpen} onOpenChange={setCreateOpen}>
             <DialogTrigger asChild><Button className="gradient-primary gap-2"><Plus className="h-4 w-4" /> New Task</Button></DialogTrigger>
@@ -74,7 +120,7 @@ export default function TasksPage() {
             <SelectItem value="all">All Status</SelectItem>
             <SelectItem value="pending">Pending</SelectItem>
             <SelectItem value="in_progress">In Progress</SelectItem>
-            <SelectItem value="completed">Completed</SelectItem>
+            <SelectItem value="completed">{isStudent ? "Done" : "Completed"}</SelectItem>
           </SelectContent>
         </Select>
         <Select value={priorityFilter} onValueChange={setPriorityFilter}>
@@ -100,12 +146,19 @@ export default function TasksPage() {
                   <p className="text-sm text-muted-foreground mt-1">{t.description}</p>
                   <p className="text-xs text-muted-foreground mt-1">Due: {t.dueDate}</p>
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="flex items-center gap-2 flex-shrink-0 flex-wrap justify-end">
                   <StatusBadge status={t.priority} />
-                  <StatusBadge status={t.status} />
+                  {renderStatusControl(t)}
                   <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => { setSelected(t); setViewOpen(true); }}><Eye className="h-4 w-4" /></Button>
-                  {t.status !== "completed" && (
-                    <Button size="icon" variant="ghost" className="h-8 w-8 text-success" onClick={() => toast.success("Task marked as completed!")}><CheckCircle2 className="h-4 w-4" /></Button>
+                  {!isStudent && t.status !== "completed" && (
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-8 w-8 text-success"
+                      onClick={() => updateTaskStatus(t.id, "completed")}
+                    >
+                      <CheckCircle2 className="h-4 w-4" />
+                    </Button>
                   )}
                 </div>
               </div>
@@ -122,7 +175,10 @@ export default function TasksPage() {
             <div className="space-y-3 text-sm">
               <div className="grid grid-cols-2 gap-3">
                 <div><p className="text-muted-foreground">Priority</p><StatusBadge status={selected.priority} /></div>
-                <div><p className="text-muted-foreground">Status</p><StatusBadge status={selected.status} /></div>
+                <div>
+                  <p className="text-muted-foreground mb-1.5">Status</p>
+                  {isStudent ? renderStatusControl(selected) : <StatusBadge status={selected.status} />}
+                </div>
                 <div><p className="text-muted-foreground">Due Date</p><p className="font-medium">{selected.dueDate}</p></div>
                 <div><p className="text-muted-foreground">Placement</p><p className="font-medium">{selected.placementId}</p></div>
               </div>
