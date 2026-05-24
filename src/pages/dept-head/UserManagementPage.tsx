@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +33,7 @@ const mockSystemUsers = [
 ];
 
 export default function UserManagementPage() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [isInviting, setIsInviting] = useState(false);
   
@@ -61,7 +63,15 @@ export default function UserManagementPage() {
           <h1 className="text-2xl font-bold">System User Management</h1>
           <p className="text-muted-foreground text-sm">Register, invite and manage department staff and supervisors</p>
         </div>
-        <Dialog>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="outline"
+            className="gap-2"
+            onClick={() => navigate("/department-head/students")}
+          >
+            <GraduationCap className="h-4 w-4" /> Student Management
+          </Button>
+          <Dialog>
           <DialogTrigger asChild>
             <Button className="gradient-primary gap-2 shadow-lg shadow-primary/20">
               <UserPlus className="h-4 w-4" /> Invite New User
@@ -90,6 +100,7 @@ export default function UserManagementPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       <div className="flex items-center gap-3">

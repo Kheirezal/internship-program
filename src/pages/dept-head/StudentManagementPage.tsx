@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +10,7 @@ import {
   FileSpreadsheet, FileText, Download,
   CheckCircle2, XCircle, AlertCircle,
   MoreVertical, Edit, ShieldCheck, Mail, Phone,
-  Filter
+  Filter, ArrowLeft
 } from "lucide-react";
 import { 
   DropdownMenu, 
@@ -30,6 +31,7 @@ const mockDepartmentStudents = [
 ];
 
 export default function StudentManagementPage() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [isImporting, setIsImporting] = useState(false);
   
@@ -52,6 +54,15 @@ export default function StudentManagementPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
+      <Button
+        variant="ghost"
+        size="sm"
+        className="gap-2 -ml-2 text-muted-foreground"
+        onClick={() => navigate("/department-head/users")}
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back to User Management
+      </Button>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Student Management</h1>

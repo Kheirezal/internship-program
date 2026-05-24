@@ -24,7 +24,7 @@ export default function ProtectedRoute({ allowedRoles, children }: ProtectedRout
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to={`/${user.role.replace("_", "-")}`} replace />;
+    return <Navigate to={`/${user.role.replace(/_/g, "-")}`} replace />;
   }
 
   return children ? <>{children}</> : <Outlet />;

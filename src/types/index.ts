@@ -268,6 +268,7 @@ export type StudentSubmissionRecipient = "company_supervisor" | "internship_advi
 export interface StudentDocumentSubmission {
   id: string;
   studentId: string;
+  studentName?: string;
   placementId: string;
   documentType: StudentSubmissionDocType;
   recipientRole: StudentSubmissionRecipient;
@@ -278,6 +279,105 @@ export interface StudentDocumentSubmission {
   notes?: string;
   status: "pending" | "approved" | "rejected" | "revision_requested";
   submittedAt: string;
+}
+
+/** Advisor: summarized progress report submitted by student for periodic review */
+export interface AdvisorProgressReport {
+  id: string;
+  placementId: string;
+  studentId: string;
+  studentName: string;
+  advisorId: string;
+  period: string;
+  summary: string;
+  keyAchievements: string[];
+  challenges: string[];
+  hoursLogged: number;
+  overallRating: number;
+  status: "pending_review" | "reviewed" | "flagged";
+  submittedAt: string;
+  advisorNotes?: string;
+}
+
+/** Advisor: academic relevance of internship work vs curriculum */
+export interface AcademicRelevanceReview {
+  id: string;
+  placementId: string;
+  studentName: string;
+  projectTitle: string;
+  learningObjectives: string[];
+  curriculumAlignment: "strong" | "moderate" | "weak" | "pending";
+  relevanceScore: number;
+  techStackMatch: boolean;
+  researchComponent: boolean;
+  advisorComments?: string;
+  lastReviewedAt?: string;
+}
+
+export type AdvisorFollowUpType = "weekly" | "mid_term" | "milestone" | "ad_hoc";
+export type AdvisorFollowUpStatus = "scheduled" | "completed" | "missed";
+export type AdvisorFollowUpOutcome = "on_track" | "needs_attention" | "at_risk";
+
+/** Advisor: periodic follow-up meetings and check-ins */
+export interface AdvisorFollowUp {
+  id: string;
+  placementId: string;
+  studentName: string;
+  type: AdvisorFollowUpType;
+  scheduledDate: string;
+  scheduledTime?: string;
+  meetingMode?: "in_person" | "virtual" | "phone";
+  location?: string;
+  completedDate?: string;
+  status: AdvisorFollowUpStatus;
+  discussionPoints: string;
+  actionItems: string;
+  meetingNotes?: string;
+  outcomeSummary?: AdvisorFollowUpOutcome;
+  nextFollowUpDate?: string;
+}
+
+/** Advisor: final internship report and documentation review */
+export interface FinalReportReview {
+  id: string;
+  placementId: string;
+  studentName: string;
+  title: string;
+  fileName: string;
+  submittedAt: string;
+  status: "pending" | "approved" | "revision_requested" | "rejected";
+  completenessScore?: number;
+  methodologyReview?: string;
+  documentationQuality?: number;
+  advisorFeedback?: string;
+}
+
+/** Advisor: presentation and defense readiness assessment */
+export interface DefenseReadinessReview {
+  id: string;
+  placementId: string;
+  studentName: string;
+  defenseDate: string;
+  presentationReady: boolean;
+  slidesSubmitted: boolean;
+  demoReady: boolean;
+  qnaPrepared: boolean;
+  readinessScore: number;
+  status: "not_ready" | "needs_work" | "ready";
+  advisorNotes?: string;
+}
+
+/** Advisor: academic guidance and research direction notes */
+export interface AcademicGuidanceNote {
+  id: string;
+  placementId: string;
+  studentName: string;
+  researchTopic: string;
+  researchDirection: string;
+  methodologyGuidance: string;
+  recommendedResources: string[];
+  lastUpdatedAt: string;
+  nextMeetingDate?: string;
 }
 
 /** Role-specific alerts shown to students with actionable due dates */
