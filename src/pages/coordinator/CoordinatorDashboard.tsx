@@ -55,17 +55,26 @@ const statusData = [
 
   return (
     <div className="space-y-6 animate-in">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Coordinator Dashboard</h1>
           <p className="text-muted-foreground text-sm">Overview of the internship program</p>
         </div>
-         <Button className="gradient-primary gap-2" onClick={() => navigate("/internship-coordinator/reports")}>
-           <TrendingUp className="h-4 w-4" /> View Reports
-         </Button>
-       </div>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="outline"
+            className="gap-2"
+            onClick={() => navigate("/internship-coordinator/complaints")}
+          >
+            <AlertCircle className="h-4 w-4" /> Complaints
+          </Button>
+          <Button className="gradient-primary gap-2" onClick={() => navigate("/internship-coordinator/reports")}>
+            <TrendingUp className="h-4 w-4" /> View Reports
+          </Button>
+        </div>
+      </div>
 
-       {/* Auto Insights Section */}
+      {/* Auto Insights Section */}
        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
          {insights.map((insight, idx) => (
            <div 

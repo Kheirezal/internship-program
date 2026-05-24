@@ -6,8 +6,8 @@ import { NavLink, useLocation } from "react-router-dom";
 import {
   Building2, Users, ClipboardList, BookOpen, CheckSquare, Calendar,
   MessageSquare, BarChart3, FileText, Star, GraduationCap, AlertCircle,
-  Home, UserCheck, Clock, Upload, HelpCircle, Briefcase, Target, ChevronRight, Shield,
-  Megaphone, BookMarked, TrendingUp, MapPin, Scale, Calculator, Award, Send, Eye
+  Home, UserCheck, Clock, Upload, HelpCircle, Briefcase, Target, ChevronRight, Shield, FileUp,
+  Megaphone, BookMarked, TrendingUp, MapPin, Calculator, Award, Send, Eye
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -24,16 +24,13 @@ const NAV_ITEMS: Record<UserRole, NavItem[]> = {
     { label: "Dashboard", path: "/internship-coordinator", icon: Home },
     { label: "Companies", path: "/internship-coordinator/companies", icon: Building2 },
     { label: "Placements", path: "/internship-coordinator/placements", icon: Briefcase },
-    { label: "Applications", path: "/internship-coordinator/applications", icon: Send },
     { label: "Students", path: "/internship-coordinator/students", icon: GraduationCap },
-    { label: "Evaluations", path: "/internship-coordinator/evaluations", icon: Star },
-    { label: "Rubric Config", path: "/internship-coordinator/rubric", icon: Scale },
-    { label: "Grade Calculation", path: "/internship-coordinator/grades", icon: Calculator },
     { label: "Site Visits", path: "/internship-coordinator/site-visits", icon: MapPin },
+    { label: "Defense Schedule", path: "/internship-coordinator/defense", icon: Target },
+    { label: "Grade Calculation", path: "/internship-coordinator/grades", icon: Calculator },
     { label: "Documents", path: "/internship-coordinator/documents", icon: FileText },
     { label: "Calendar", path: "/internship-coordinator/calendar", icon: Calendar },
     { label: "Reports", path: "/internship-coordinator/reports", icon: BarChart3 },
-    { label: "Complaints", path: "/internship-coordinator/complaints", icon: AlertCircle },
     { label: "Messages", path: "/internship-coordinator/messages", icon: MessageSquare },
     { label: "User Management", path: "/internship-coordinator/users", icon: Users },
   ],
@@ -109,6 +106,7 @@ const NAV_ITEMS: Record<UserRole, NavItem[]> = {
     { label: "Internship", path: "/internship-student/internship", icon: Briefcase },
     { label: "Logbooks", path: "/internship-student/logbooks", icon: BookOpen },
     { label: "Documents", path: "/internship-student/documents", icon: FileText },
+    { label: "Submissions", path: "/internship-student/submissions", icon: FileUp },
     { label: "Tasks", path: "/internship-student/tasks", icon: CheckSquare },
     { label: "Attendance", path: "/internship-student/attendance", icon: Clock },
     { label: "Examinations", path: "/internship-student/exams", icon: FileText },

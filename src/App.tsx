@@ -47,6 +47,7 @@ import StudentDashboard from "@/pages/student/StudentDashboard";
 import InternshipOverviewPage from "@/pages/student/InternshipOverviewPage";
 import StudentLogbooksPage from "@/pages/student/StudentLogbooksPage";
 import SubmitReportPage from "@/pages/student/SubmitReportPage";
+import StudentSubmissionPage from "@/pages/student/StudentSubmissionPage";
 import InternshipApplicationPage from "@/pages/student/InternshipApplicationPage";
 
 import StudentExamsPage from "@/pages/student/StudentExamsPage";
@@ -118,7 +119,6 @@ const App = () => (
               <Route path="/internship-coordinator/companies" element={<CompaniesPage />} />
               <Route path="/internship-coordinator/placements" element={<PlacementsPage />} />
               <Route path="/internship-coordinator/students" element={<StudentsPage />} />
-              <Route path="/internship-coordinator/evaluations" element={<EvaluationsPage />} />
               <Route path="/internship-coordinator/calendar" element={<CalendarPage />} />
               <Route path="/internship-coordinator/reports" element={<ReportsPage />} />
               <Route path="/internship-coordinator/complaints" element={<ComplaintsPage />} />
@@ -130,6 +130,7 @@ const App = () => (
               <Route path="/internship-coordinator/rubric" element={<RubricConfigPage />} />
               <Route path="/internship-coordinator/grades" element={<GradeCalculationPage />} />
               <Route path="/internship-coordinator/site-visits" element={<SiteVisitsPage />} />
+              <Route path="/internship-coordinator/defense" element={<DefensePage />} />
               <Route path="/internship-coordinator/applications" element={<ApplicationsPage />} />
               <Route path="/internship-coordinator/documents" element={<DocumentsPage />} />
             </Route>
@@ -200,6 +201,7 @@ const App = () => (
               <Route path="/internship-student/logbooks" element={<StudentLogbooksPage />} />
               <Route path="/internship-student/submit-logbook" element={<StudentLogbooksPage />} />
               <Route path="/internship-student/documents" element={<DocumentsPage />} />
+              <Route path="/internship-student/submissions" element={<StudentSubmissionPage />} />
               <Route path="/internship-student/upload-document" element={<DocumentsPage />} />
               <Route path="/internship-student/submit-report" element={<SubmitReportPage />} />
               <Route path="/internship-student/tasks" element={<TasksPage />} />

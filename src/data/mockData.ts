@@ -1,4 +1,4 @@
-import type { Company, Placement, Logbook, Task, Attendance, Evaluation, Message, Grade, Complaint, CalendarEvent, Document, ActivityEvent, SiteVisit, InternshipApplication, Announcement, Recommendation, RubricConfig, OrientationSession, GapAnalysis, Exam, ExamQuestion, ExamSubmission } from "@/types";
+import type { Company, Placement, Logbook, Task, Attendance, Evaluation, Message, Grade, Complaint, CalendarEvent, DefenseSchedule, Document, ActivityEvent, SiteVisit, InternshipApplication, Announcement, StudentRoleAlert, StudentDocumentSubmission, Recommendation, RubricConfig, OrientationSession, GapAnalysis, Exam, ExamQuestion, ExamSubmission } from "@/types";
 
 export const mockCompanies: Company[] = [
   { id: "c1", name: "TechCorp Solutions", industry: "Technology", address: "123 Silicon Ave", contactPerson: "John Smith", contactEmail: "john@techcorp.com", contactPhone: "+1-555-0101", status: "active", studentsCount: 8, maxCapacity: 10, positions: ["Frontend Developer", "Backend Engineer"], requiredSkills: ["React", "Node.js", "TypeScript"], duration: "4 Months", qualityRating: 4.5, partnerSince: "2022-01-15" },
@@ -60,12 +60,35 @@ export const mockComplaints: Complaint[] = [
   { id: "comp2", studentId: "u5", studentName: "Alex Johnson", subject: "Workplace Environment Issue", description: "The assigned work area lacks proper ventilation and ergonomic setup.", category: "workplace", status: "open", createdAt: new Date(Date.now() - 172800000).toISOString() },
 ];
 
+export const mockDefenseSchedules: DefenseSchedule[] = [
+  {
+    id: "def1",
+    placementId: "p1",
+    studentId: "u5",
+    studentName: "Alex Johnson",
+    companyName: "TechCorp Solutions",
+    title: "Final Internship Defense — HR Management System",
+    description: "Final internship defense presentation for the Internal HR Management System API project.",
+    date: "2026-06-15",
+    time: "10:00",
+    location: "Room 301, Engineering Building A",
+    duration: "60 minutes",
+    panelMembers: ["Prof. James Wilson", "Dr. Maria Garcia", "Michael Brown"],
+  },
+];
+
 export const mockCalendarEvents: CalendarEvent[] = [
-  { id: "ev1", title: "Alex Johnson Defense", description: "Final internship defense presentation", date: "2025-04-25", time: "10:00", type: "defense", participants: ["Alex Johnson", "Prof. James Wilson", "Dr. Maria Garcia"] },
-  { id: "ev2", title: "Progress Review Meeting", description: "Monthly progress review with all interns", date: "2025-04-15", time: "14:00", type: "meeting", participants: ["Prof. James Wilson", "All students"] },
-  { id: "ev3", title: "Report Submission Deadline", description: "Final report submission deadline", date: "2025-04-30", time: "23:59", type: "deadline", participants: ["All students"] },
-  { id: "ev4", title: "TechCorp Site Visit", description: "Advisor site visit to TechCorp Solutions", date: "2025-04-20", time: "10:00", type: "site_visit", participants: ["Prof. James Wilson", "Michael Brown", "Alex Johnson"] },
-  { id: "ev5", title: "Professional Ethics Workshop", description: "Orientation session on workplace ethics and NDA", date: "2025-04-12", time: "09:00", type: "orientation", participants: ["All students"] },
+  { id: "ev1", title: "Alex Johnson Defense", description: "Final internship defense presentation", date: "2026-06-15", time: "10:00", type: "defense", participants: ["Alex Johnson", "Prof. James Wilson", "Dr. Maria Garcia"] },
+  { id: "ev2", title: "Progress Review Meeting", description: "Monthly progress review with all interns", date: "2026-04-15", time: "14:00", type: "meeting", participants: ["Prof. James Wilson", "All students"] },
+  { id: "ev3", title: "Report Submission Deadline", description: "Final report submission deadline", date: "2026-04-30", time: "23:59", type: "deadline", participants: ["All students"] },
+  { id: "ev4", title: "TechCorp Site Visit", description: "Advisor site visit to TechCorp Solutions", date: "2026-04-20", time: "10:00", type: "site_visit", participants: ["Prof. James Wilson", "Michael Brown", "Alex Johnson"] },
+  { id: "ev5", title: "Professional Ethics Workshop", description: "Orientation session on workplace ethics and NDA", date: "2026-01-12", time: "09:00", type: "orientation", participants: ["All students"] },
+  { id: "ev6", title: "Spring Placement Kickoff", description: "Coordinator briefing for new internship cohort", date: "2026-02-03", time: "11:00", type: "meeting", participants: ["Dr. Sarah Chen", "All advisors"] },
+  { id: "ev7", title: "Logbook Review Deadline", description: "Weekly logbook entries due for March", date: "2026-03-28", time: "23:59", type: "deadline", participants: ["All students"] },
+  { id: "ev8", title: "Industry Partner Day", description: "Company supervisors meet academic staff", date: "2026-05-22", time: "13:00", type: "event", participants: ["Partner companies", "Coordinators"] },
+  { id: "ev9", title: "Mid-Year Evaluation Deadline", description: "Supervisor evaluations must be submitted", date: "2026-07-01", time: "23:59", type: "deadline", participants: ["Company supervisors"] },
+  { id: "ev10", title: "Fall Orientation Session", description: "NDA and workplace conduct for new interns", date: "2026-09-08", time: "09:00", type: "orientation", participants: ["All students"] },
+  { id: "ev11", title: "Year-End Program Review", description: "Department review of internship outcomes", date: "2026-11-18", time: "15:00", type: "meeting", participants: ["Dr. Maria Garcia", "Dr. Sarah Chen"] },
 ];
 
 export const mockDocuments: Document[] = [
@@ -104,6 +127,68 @@ export const mockAnnouncements: Announcement[] = [
   { id: "ann1", title: "Internship Portal Now Live for Batch 2026", content: "The internship portal is now open for applications. All eligible students must submit their applications by April 30, 2025. Please ensure your GPA meets the minimum requirement of 2.5 and all prerequisite courses are completed.", authorId: "u3", authorName: "Dr. Maria Garcia", authorRole: "department_head", targetRoles: ["internship_student", "internship_advisor"], priority: "important", createdAt: new Date(Date.now() - 604800000).toISOString() },
   { id: "ann2", title: "Updated Evaluation Rubric Published", content: "The evaluation rubric for this semester has been updated. Company Supervisor (30%), Academic Advisor (30%), Academic Evaluator (40%). Please review the criteria before submitting evaluations.", authorId: "u3", authorName: "Dr. Maria Garcia", authorRole: "department_head", targetRoles: ["internship_coordinator", "internship_advisor", "company_supervisor"], priority: "normal", createdAt: new Date(Date.now() - 259200000).toISOString() },
   { id: "ann3", title: "NDA Compliance Reminder", content: "All interns must sign the Non-Disclosure Agreement before starting their placement. Failure to comply will result in placement cancellation.", authorId: "u3", authorName: "Dr. Maria Garcia", authorRole: "department_head", targetRoles: ["internship_student"], priority: "urgent", createdAt: new Date(Date.now() - 86400000).toISOString() },
+];
+
+export const mockStudentRoleAlerts: StudentRoleAlert[] = [
+  {
+    id: "sra1",
+    studentId: "u5",
+    fromRole: "internship_advisor",
+    fromName: "Prof. James Wilson",
+    title: "Mid-term progress check-in",
+    message: "Share your draft report outline and book a 15-minute review meeting.",
+    dueDate: "2026-05-28",
+    priority: "important",
+    link: "/internship-student/messages",
+  },
+  {
+    id: "sra2",
+    studentId: "u5",
+    fromRole: "internship_coordinator",
+    fromName: "Dr. Maria Garcia",
+    title: "Insurance certificate upload",
+    message: "Upload your signed insurance certificate before placement verification closes.",
+    dueDate: "2026-05-25",
+    priority: "urgent",
+    link: "/internship-student/documents",
+  },
+  {
+    id: "sra3",
+    studentId: "u5",
+    fromRole: "company_supervisor",
+    fromName: "Michael Brown",
+    title: "API documentation deliverable",
+    message: "Complete and submit API documentation for the auth module review.",
+    dueDate: "2026-05-30",
+    priority: "normal",
+    link: "/internship-student/tasks",
+  },
+];
+
+export const mockStudentDocumentSubmissions: StudentDocumentSubmission[] = [
+  {
+    id: "sub1",
+    studentId: "u5",
+    placementId: "p1",
+    documentType: "proposal",
+    recipientRole: "internship_advisor",
+    recipientName: "Prof. James Wilson",
+    fileName: "Project_Proposal_v1.pdf",
+    notes: "Initial project scope and objectives",
+    status: "approved",
+    submittedAt: new Date(Date.now() - 1209600000).toISOString(),
+  },
+  {
+    id: "sub2",
+    studentId: "u5",
+    placementId: "p1",
+    documentType: "srs",
+    recipientRole: "company_supervisor",
+    recipientName: "Michael Brown",
+    fileName: "SRS_HR_System.pdf",
+    status: "pending",
+    submittedAt: new Date(Date.now() - 432000000).toISOString(),
+  },
 ];
 
 export const mockRecommendations: Recommendation[] = [

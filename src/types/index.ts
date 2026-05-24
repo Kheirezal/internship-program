@@ -144,6 +144,21 @@ export interface CalendarEvent {
   participants: string[];
 }
 
+export interface DefenseSchedule {
+  id: string;
+  placementId: string;
+  studentId: string;
+  studentName: string;
+  companyName: string;
+  title: string;
+  description?: string;
+  date: string;
+  time: string;
+  location: string;
+  duration: string;
+  panelMembers: string[];
+}
+
 export interface Document {
   id: string;
   name: string;
@@ -245,6 +260,37 @@ export interface Announcement {
   createdAt: string;
   expiresAt?: string;
   isRead?: boolean;
+}
+
+export type StudentSubmissionDocType = "proposal" | "srs" | "implementation" | "other";
+export type StudentSubmissionRecipient = "company_supervisor" | "internship_advisor";
+
+export interface StudentDocumentSubmission {
+  id: string;
+  studentId: string;
+  placementId: string;
+  documentType: StudentSubmissionDocType;
+  recipientRole: StudentSubmissionRecipient;
+  recipientName: string;
+  fileName?: string;
+  deploymentLink?: string;
+  sourceZipName?: string;
+  notes?: string;
+  status: "pending" | "approved" | "rejected" | "revision_requested";
+  submittedAt: string;
+}
+
+/** Role-specific alerts shown to students with actionable due dates */
+export interface StudentRoleAlert {
+  id: string;
+  studentId: string;
+  fromRole: "internship_advisor" | "internship_coordinator" | "company_supervisor";
+  fromName: string;
+  title: string;
+  message: string;
+  dueDate: string;
+  priority: "normal" | "important" | "urgent";
+  link?: string;
 }
 
 export interface Recommendation {

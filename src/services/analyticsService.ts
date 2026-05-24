@@ -29,7 +29,7 @@ export const analyticsService = {
         type: "warning", 
         message: `${pendingEvals} evaluations pending`, 
         count: pendingEvals,
-        link: "/internship-coordinator/evaluations" 
+        link: "/internship-coordinator/grades" 
       });
     }
 

@@ -1,12 +1,14 @@
 import StatsCard from "@/components/shared/StatsCard";
 import StatusBadge from "@/components/shared/StatusBadge";
+import StudentRoleAlertsList from "@/components/student/StudentRoleAlertsList";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { analyticsService } from "@/services/analyticsService";
 import { useAuthStore } from "@/stores/authStore";
-import { Briefcase, BookOpen, Clock, BarChart3, CheckCircle2, Eye, Star, Info, AlertCircle, ShieldAlert } from "lucide-react";
-import { mockLogbooks, mockTasks, mockAttendance } from "@/data/mockData";
+import { Briefcase, BookOpen, Clock, BarChart3, CheckCircle2, Eye, Info, AlertCircle, ShieldAlert, Megaphone } from "lucide-react";
+import { mockLogbooks, mockTasks, mockStudentRoleAlerts } from "@/data/mockData";
 import { useNavigate } from "react-router-dom";
+import { useMemo } from "react";
 
 const PROGRESS_STEPS = [
   { step: 1, label: "Placement assigned", done: true },
@@ -19,10 +21,34 @@ const PROGRESS_STEPS = [
   { step: 8, label: "Grade published", done: false },
 ];
 
+const PROGRESS_ROWS = [PROGRESS_STEPS.slice(0, 4), PROGRESS_STEPS.slice(4, 8)];
+
+function ProgressStep({ step, label, done }: (typeof PROGRESS_STEPS)[number]) {
+  return (
+    <div className="flex flex-col items-center gap-2 text-center px-1">
+      <div
+        className={`h-9 w-9 rounded-full flex items-center justify-center text-xs font-bold ${
+          done ? "gradient-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+        }`}
+      >
+        {done ? <CheckCircle2 className="h-4 w-4" /> : step}
+      </div>
+      <span className={`text-xs leading-tight max-w-[5.5rem] sm:max-w-none ${done ? "font-medium" : "text-muted-foreground"}`}>
+        {label}
+      </span>
+    </div>
+  );
+}
+
  export default function StudentDashboard() {
    const navigate = useNavigate();
    const { user } = useAuthStore();
-   const insights = analyticsService.getStudentInsights(user?.id || "u1");
+   const studentId = user?.id || "u5";
+   const insights = analyticsService.getStudentInsights(studentId);
+   const roleAlerts = useMemo(
+     () => mockStudentRoleAlerts.filter((a) => a.studentId === studentId),
+     [studentId],
+   );
 
    const getInsightIcon = (type: string) => {
      switch (type) {
@@ -66,21 +92,45 @@ const PROGRESS_STEPS = [
         <div className="cursor-pointer" onClick={() => navigate("/internship-student/tasks")}><StatsCard title="Active Tasks" value={mockTasks.filter(t => t.assignedTo === "u5" && t.status !== "completed").length} icon={BarChart3} /></div>
       </div>
 
-      <Card className="shadow-card">
-        <CardHeader><CardTitle className="text-base">Internship Progress</CardTitle></CardHeader>
-        <CardContent>
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-0 items-start sm:items-center justify-between">
-            {PROGRESS_STEPS.map((s) => (
-              <div key={s.step} className="flex items-center gap-2 sm:flex-col sm:gap-1">
-                <div className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${s.done ? "gradient-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
-                  {s.done ? <CheckCircle2 className="h-4 w-4" /> : s.step}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <Card className="shadow-card">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Internship Progress</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-5">
+            {PROGRESS_ROWS.map((row, rowIndex) => (
+              <div key={rowIndex} className="space-y-3">
+                {rowIndex === 1 && (
+                  <div className="flex items-center gap-3">
+                    <div className="h-px flex-1 bg-border" />
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      Final phase
+                    </span>
+                    <div className="h-px flex-1 bg-border" />
+                  </div>
+                )}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-2">
+                  {row.map((s) => (
+                    <ProgressStep key={s.step} {...s} />
+                  ))}
                 </div>
-                <span className={`text-xs text-center max-w-[80px] ${s.done ? "font-medium" : "text-muted-foreground"}`}>{s.label}</span>
               </div>
             ))}
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-card">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Megaphone className="h-4 w-4 text-primary" />
+              Role Announcements
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <StudentRoleAlertsList alerts={roleAlerts} />
+          </CardContent>
+        </Card>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card className="shadow-card">

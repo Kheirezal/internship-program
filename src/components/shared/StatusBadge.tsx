@@ -15,6 +15,7 @@ const STATUS_STYLES: Record<string, string> = {
   submitted: "bg-info/10 text-info border-info/20",
   in_progress: "bg-info/10 text-info border-info/20",
   in_review: "bg-info/10 text-info border-info/20",
+  revision_requested: "bg-warning/10 text-warning border-warning/20",
   reviewed: "bg-primary/10 text-primary border-primary/20",
   draft: "bg-muted text-muted-foreground border-muted",
   rejected: "bg-destructive/10 text-destructive border-destructive/20",
@@ -28,6 +29,7 @@ const STATUS_STYLES: Record<string, string> = {
   high: "bg-destructive/10 text-destructive border-destructive/20",
   medium: "bg-warning/10 text-warning border-warning/20",
   low: "bg-success/10 text-success border-success/20",
+  defense: "bg-primary/10 text-primary border-primary/20",
 };
 
 export default function StatusBadge({ status, className }: { status: StatusType; className?: string }) {

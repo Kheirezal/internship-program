@@ -6,14 +6,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { mockComplaints } from "@/data/mockData";
-import { Plus, Eye, MessageSquare } from "lucide-react";
+import { Plus, Eye, MessageSquare, ArrowLeft } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import type { Complaint } from "@/types";
 import { useAuthStore } from "@/stores/authStore";
 
 export default function ComplaintsPage() {
+  const navigate = useNavigate();
   const { user } = useAuthStore();
   const [createOpen, setCreateOpen] = useState(false);
   const [viewOpen, setViewOpen] = useState(false);
@@ -22,10 +24,22 @@ export default function ComplaintsPage() {
   const [statusFilter, setStatusFilter] = useState("all");
 
   const isStudent = user?.role === "internship_student";
+  const isCoordinator = user?.role === "internship_coordinator";
   const filtered = mockComplaints.filter(c => statusFilter === "all" || c.status === statusFilter);
 
   return (
     <div className="space-y-6 animate-in">
+      {isCoordinator && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="gap-2 -ml-2 text-muted-foreground"
+          onClick={() => navigate("/internship-coordinator")}
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Dashboard
+        </Button>
+      )}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div><h1 className="text-2xl font-bold">Complaints</h1><p className="text-muted-foreground text-sm">Complaints, disputes, and resolutions</p></div>
         {isStudent && (
